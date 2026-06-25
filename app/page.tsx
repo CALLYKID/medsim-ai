@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { diseaseLibrary } from "./data/diseaseLibrary";
+import type { Disease } from "./data/diseaseLibrary";
 
 import {
   maleFirstNames,
@@ -18,7 +19,7 @@ import {
  * PATIENT GENERATOR
  * =========================
  */
-function generatePatient(caseData: (typeof diseaseLibrary)[number]) {
+function generatePatient(caseData: Disease) {
   const sex = Math.random() > 0.5 ? "Male" : "Female";
 
   const firstName =
@@ -45,8 +46,8 @@ function generatePatient(caseData: (typeof diseaseLibrary)[number]) {
 
   return {
     ...caseData,
+
     patient: {
-      ...caseData.patient,
       name: `${firstName} ${lastName}`,
       sex,
       age,
@@ -55,15 +56,30 @@ function generatePatient(caseData: (typeof diseaseLibrary)[number]) {
       painTolerance: pain,
       anxiety,
     },
+
     aiContext: {
-    disease: caseData.name,
-    chiefComplaint: caseData.presentation.chiefComplaint,
-    keyFindings: caseData.hidden.findings,
-  }
+      disease: caseData.name,
+      chiefComplaint: caseData.presentation.chiefComplaint,
+      keyFindings: caseData.hidden.findings,
+    },
   };
 }
-
-type GeneratedPatient = ReturnType<typeof generatePatient>;
+type GeneratedPatient = Disease & {
+  patient: {
+    name: string;
+    sex: string;
+    age: number;
+    occupation: string;
+    personality: string;
+    painTolerance: string;
+    anxiety: number;
+  };
+  aiContext: {
+    disease: string;
+    chiefComplaint: string;
+    keyFindings: any[];
+  };
+};
 
 /**
  * =========================
