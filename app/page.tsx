@@ -153,11 +153,15 @@ export default function Home() {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: question }),
+    body: JSON.stringify({
+      message: question,
+      context: patient?.aiContext
+    }),
   });
-
+setQuestionHistory((prev) => [...prev, question]);
   const data = await res.json();
   setResponse(data.reply);
+  setQuestion("");
 }
 
   // -------------------------
