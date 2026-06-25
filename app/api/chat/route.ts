@@ -47,3 +47,4 @@ ${context?.keyFindings
   return Response.json({
     reply: completion.choices[0].message.content,
   });
+}

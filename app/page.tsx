@@ -64,7 +64,7 @@ function generatePatient(caseData: Disease) {
     },
   };
 }
-type GeneratedPatient = Disease & {
+type GeneratedPatient = Omit<Disease, "patient"> & {
   patient: {
     name: string;
     sex: string;
@@ -74,10 +74,11 @@ type GeneratedPatient = Disease & {
     painTolerance: string;
     anxiety: number;
   };
+
   aiContext: {
     disease: string;
     chiefComplaint: string;
-    keyFindings: any[];
+    keyFindings: Disease["hidden"]["findings"];
   };
 };
 
@@ -186,7 +187,7 @@ setQuestionHistory((prev) => [...prev, question]);
   function submitDiagnosis() {
     if (!patient) return;
 
-    const correct = patient.hidden.diagnosis.toLowerCase();
+    const correct = patient.hidden.diagnosis.toLowerCase().trim();
     const user = diagnosis.toLowerCase().trim();
 
     const isCorrect = user.includes(correct);
