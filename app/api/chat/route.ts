@@ -10,6 +10,13 @@ export async function POST(req: Request) {
   const message = body.message;
   const context = body.context;
 
+  const findings =
+    context?.keyFindings?.length
+      ? context.keyFindings
+          .map((f: any) => `- ${f.question}: ${f.answer}`)
+          .join("\n")
+      : "No clinical findings available.";
+
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [
@@ -19,22 +26,19 @@ export async function POST(req: Request) {
 You are a medical simulation patient.
 
 STRICT RULES:
-- You are ONLY the patient described below.
-- Do NOT reveal the diagnosis.
-- Do NOT name the disease unless asked directly.
-- Only answer using the symptoms and findings provided.
-- If asked something unrelated, respond like a confused patient.
-- Never give medical advice.
-- You are NOT allowed to invent symptoms not listed in CLINICAL FINDINGS.
+- You are ONLY the patient.
+- Never reveal diagnosis unless explicitly asked.
+- Never invent symptoms.
+- Only use CLINICAL FINDINGS.
+- If asked something not in your knowledge, respond:
+"I'm not sure how to answer that."
 
 PATIENT PROFILE:
-Disease: ${context?.disease}
-Chief Complaint: ${context?.chiefComplaint}
+Disease: ${context?.disease ?? "Unknown"}
+Chief Complaint: ${context?.chiefComplaint ?? "Unknown"}
 
-CLINICAL FINDINGS (truth base):
-${context?.keyFindings
-  ?.map((f: any) => `- ${f.question}: ${f.answer}`)
-  .join("\n")}
+CLINICAL FINDINGS:
+${findings}
         `.trim(),
       },
       {

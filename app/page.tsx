@@ -87,6 +87,22 @@ type GeneratedPatient = Omit<Disease, "patient"> & {
  * MAIN APP
  * =========================
  */
+ 
+ function matchFindings(
+  question: string,
+  findings: { question: string; answer: string }[]
+) {
+  const q = question.toLowerCase();
+
+  return findings.filter((f) => {
+    const keyword = f.question.toLowerCase();
+
+    return (
+      q.includes(keyword) ||
+      keyword.includes(q)
+    );
+  });
+}
 export default function Home() {
   // -------------------------
   // STATE LAYER
@@ -109,25 +125,24 @@ export default function Home() {
   // SCORING ENGINE
   // -------------------------
   function calculateScore(isCorrect: boolean) {
-    if (!patient) return;
+  if (!patient) return;
 
-    const totalFindings = patient.hidden.findings.length;
-    const discovered = foundFindings.length;
+  const total = patient.hidden.findings.length;
+  const discovered = foundFindings.length;
 
-    const completeness = (discovered / totalFindings) * 100;
-    const efficiencyPenalty = questionHistory.length * 2;
+  const completeness = (discovered / total) * 100;
 
-    let baseScore = completeness;
+  const efficiencyPenalty = questionHistory.length * 1.5;
 
-    if (isCorrect) baseScore += 40;
+  const diagnosisBonus = isCorrect ? 40 : 0;
 
-    const finalScore = Math.max(
-      0,
-      Math.min(100, Math.round(baseScore - efficiencyPenalty))
-    );
+  const finalScore = Math.max(
+    0,
+    Math.min(100, Math.round(completeness + diagnosisBonus - efficiencyPenalty))
+  );
 
-    setScore(finalScore);
-  }
+  setScore(finalScore);
+}
 
   // -------------------------
   // GAME START
@@ -167,20 +182,35 @@ export default function Home() {
   // QUESTION SYSTEM
   // -------------------------
   async function askQuestion() {
+  if (!patient) return;
+
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: question,
-      context: patient?.aiContext
+      context: patient.aiContext,
     }),
   });
-setQuestionHistory((prev) => [...prev, question]);
+
   const data = await res.json();
+
+  const newFindings = matchFindings(
+    question,
+    patient.hidden.findings
+  );
+
+  setFoundFindings((prev) => {
+    const existing = new Set(prev);
+    const added = newFindings.map((f) => f.answer);
+
+    return [...prev, ...added.filter((a) => !existing.has(a))];
+  });
+
+  setQuestionHistory((prev) => [...prev, question]);
   setResponse(data.reply);
   setQuestion("");
 }
-
   // -------------------------
   // DIAGNOSIS SYSTEM
   // -------------------------
