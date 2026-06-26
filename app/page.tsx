@@ -138,18 +138,6 @@ export default function Home() {
   const [score, setScore] = useState<number | null>(null);
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setMessages((prev) =>
-      prev.map((m) => ({
-        ...m,
-        age: m.age + 1,
-      }))
-    );
-  }, 5000);
-
-  return () => clearInterval(interval);
-}, []);
   // -------------------------
   // SCORING ENGINE
   // -------------------------
