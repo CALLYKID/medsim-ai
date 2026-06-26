@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { diseaseLibrary } from "./data/diseaseLibrary";
 import type { Disease } from "./data/diseaseLibrary";
 
@@ -14,6 +14,15 @@ import {
   anxietyLevels,
 } from "./data/generator";
 
+const symptomSynonyms: Record<string, string[]> = {
+  pain: ["pain", "hurt", "hurts", "ache", "aching", "discomfort", "sore"],
+  nausea: ["nausea", "sick", "queasy", "vomit", "throw up"],
+  fever: ["fever", "hot", "temperature", "burning up"],
+  breath: ["breath", "breathing", "short of breath", "can’t breathe", "air"],
+  cough: ["cough", "coughing"],
+  chest: ["chest", "chest pain", "tight chest"],
+  dizziness: ["dizzy", "lightheaded", "faint"],
+};
 /**
  * =========================
  * PATIENT GENERATOR
@@ -58,10 +67,14 @@ function generatePatient(caseData: Disease) {
     },
 
     aiContext: {
-      disease: caseData.name,
-      chiefComplaint: caseData.presentation.chiefComplaint,
-      keyFindings: caseData.hidden.findings,
-    },
+  disease: caseData.name,
+  chiefComplaint: caseData.presentation.chiefComplaint,
+  keyFindings: caseData.hidden.findings,
+
+  personality,
+  painTolerance: pain,
+  anxiety,
+},
   };
 }
 type GeneratedPatient = Omit<Disease, "patient"> & {
@@ -95,24 +108,28 @@ type GeneratedPatient = Omit<Disease, "patient"> & {
   const q = question.toLowerCase();
 
   return findings.filter((f) => {
-    const keyword = f.question.toLowerCase();
+    const key = f.question.toLowerCase();
 
-    return (
-      q.includes(keyword) ||
-      keyword.includes(q)
-    );
+    const synonyms = symptomSynonyms[key] || [key];
+
+    return synonyms.some((s) => q.includes(s));
   });
 }
 export default function Home() {
   // -------------------------
   // STATE LAYER
   // -------------------------
+  
+  const [messages, setMessages] = useState<
+  { id: number; role: "user" | "ai"; text: string; fading: boolean }[]
+>([]);
+
   const [phase, setPhase] = useState<"menu" | "patient">("menu");
 
   const [patient, setPatient] = useState<GeneratedPatient | null>(null);
 
   const [question, setQuestion] = useState("");
-  const [response, setResponse] = useState("");
+  
   const [foundFindings, setFoundFindings] = useState<string[]>([]);
 
   const [diagnosis, setDiagnosis] = useState("");
@@ -121,6 +138,18 @@ export default function Home() {
   const [score, setScore] = useState<number | null>(null);
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
 
+useEffect(() => {
+  const interval = setInterval(() => {
+    setMessages((prev) =>
+      prev.map((m) => ({
+        ...m,
+        age: m.age + 1,
+      }))
+    );
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, []);
   // -------------------------
   // SCORING ENGINE
   // -------------------------
@@ -130,7 +159,8 @@ export default function Home() {
   const total = patient.hidden.findings.length;
   const discovered = foundFindings.length;
 
-  const completeness = (discovered / total) * 100;
+  const completeness =
+  (foundFindings.length / patient.hidden.findings.length) * 100;
 
   const efficiencyPenalty = questionHistory.length * 1.5;
 
@@ -157,7 +187,7 @@ export default function Home() {
     setPhase("patient");
 
     setQuestion("");
-    setResponse("");
+    
     setFoundFindings([]);
     setDiagnosis("");
     setResult("");
@@ -170,7 +200,7 @@ export default function Home() {
     setPhase("menu");
 
     setQuestion("");
-    setResponse("");
+    
     setFoundFindings([]);
     setDiagnosis("");
     setResult("");
@@ -195,20 +225,29 @@ export default function Home() {
 
   const data = await res.json();
 
-  const newFindings = matchFindings(
-    question,
-    patient.hidden.findings
+  // 1. fade out old messages
+  setMessages((prev) =>
+    prev.map((m) => ({ ...m, fading: true }))
   );
 
-  setFoundFindings((prev) => {
-    const existing = new Set(prev);
-    const added = newFindings.map((f) => f.answer);
+  // 2. after animation, replace with new top message
+  setTimeout(() => {
+    setMessages([
+      {
+        id: Date.now(),
+        role: "user",
+        text: question,
+        fading: false,
+      },
+      {
+        id: Date.now() + 1,
+        role: "ai",
+        text: data.reply,
+        fading: false,
+      },
+    ]);
+  }, 250);
 
-    return [...prev, ...added.filter((a) => !existing.has(a))];
-  });
-
-  setQuestionHistory((prev) => [...prev, question]);
-  setResponse(data.reply);
   setQuestion("");
 }
   // -------------------------
@@ -264,8 +303,7 @@ export default function Home() {
           </div>
 
           {/* QUESTION SYSTEM */}
-          <div className="mt-6 space-y-3">
-
+          <div className="space-y-4 mt-6">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -280,11 +318,21 @@ export default function Home() {
               Ask Question
             </button>
 
-            {response && (
-              <div className="p-4 rounded-xl bg-black/40 text-gray-200">
-                {response}
-              </div>
-            )}
+            <div className="mt-4 space-y-3">
+  {messages.map((m) => (
+    <div
+      key={m.id}
+      className={`p-3 rounded-xl bg-black/40 transition-all duration-300 ${
+        m.fading ? "opacity-0 translate-y-2" : "opacity-100"
+      }`}
+    >
+      <p className="text-xs text-gray-400 mb-1">
+        {m.role === "user" ? "You" : "Patient"}
+      </p>
+      <p className="text-gray-200">{m.text}</p>
+    </div>
+  ))}
+</div>
 
             {/* DISCOVERED CLUES */}
             {foundFindings.length > 0 && (
@@ -344,6 +392,7 @@ export default function Home() {
       </main>
     );
   }
+
 
   // -------------------------
   // MENU SCREEN
