@@ -571,5 +571,798 @@ export const diseaseLibrary: Disease[] = [
         neuro: "Disoriented to time and place, fine resting tremors noted in both hands."
       }
     }
+  },
+  {
+  id: 26,
+  name: "COPD Exacerbation",
+  presentation: {
+    chiefComplaint: "I'm much more short of breath than usual."
+  },
+  hidden: {
+    diagnosis: "COPD Exacerbation",
+    findings: [
+      { question: "smoke", answer: "I've smoked for over 40 years." },
+      { question: "cough", answer: "My cough is worse and I'm coughing up more phlegm." },
+      { question: "wheeze", answer: "Yes, I'm wheezing constantly." }
+    ],
+    examination: {
+      vitals: "BP: 138/84, HR: 108 bpm, Temp: 37.4°C, O2: 88% on room air",
+      heent: "Pursed-lip breathing noted.",
+      chest: "Reduced air entry bilaterally with widespread expiratory wheeze.",
+      abdomen: "Soft, non-tender.",
+      neuro: "Alert but breathless when speaking."
+    }
   }
+},
+
+{
+  id: 27,
+  name: "Congestive Heart Failure",
+  presentation: {
+    chiefComplaint: "I've been struggling to breathe when lying down."
+  },
+  hidden: {
+    diagnosis: "Congestive Heart Failure",
+    findings: [
+      { question: "swelling", answer: "My ankles have become swollen." },
+      { question: "sleep", answer: "I need three pillows to sleep." },
+      { question: "breath", answer: "Walking upstairs leaves me breathless." }
+    ],
+    examination: {
+      vitals: "BP: 148/88, HR: 102 bpm, Temp: 36.8°C, O2: 93%",
+      heent: "Raised jugular venous pressure.",
+      chest: "Bibasal crackles heard.",
+      abdomen: "Mild hepatomegaly.",
+      neuro: "Normal examination."
+    }
+  }
+},
+
+{
+  id: 28,
+  name: "Deep Vein Thrombosis",
+  presentation: {
+    chiefComplaint: "My calf has become swollen and painful."
+  },
+  hidden: {
+    diagnosis: "Deep Vein Thrombosis",
+    findings: [
+      { question: "travel", answer: "I recently returned from a long flight." },
+      { question: "leg", answer: "Only my left leg is swollen." },
+      { question: "pain", answer: "It's painful when I walk." }
+    ],
+    examination: {
+      vitals: "BP: 126/80, HR: 92 bpm, Temp: 37.2°C, O2: 98%",
+      heent: "Normal.",
+      chest: "Clear breath sounds.",
+      abdomen: "Soft, non-tender.",
+      neuro: "Left calf swollen, warm and tender."
+    }
+  }
+},
+
+{
+  id: 29,
+  name: "Cellulitis",
+  presentation: {
+    chiefComplaint: "My leg has become red and painful."
+  },
+  hidden: {
+    diagnosis: "Cellulitis",
+    findings: [
+      { question: "fever", answer: "I've had a fever since yesterday." },
+      { question: "skin", answer: "The redness keeps spreading." },
+      { question: "injury", answer: "I cut my leg a few days ago." }
+    ],
+    examination: {
+      vitals: "BP: 118/74, HR: 98 bpm, Temp: 38.4°C, O2: 99%",
+      heent: "Normal.",
+      chest: "Heart and lungs normal.",
+      abdomen: "Soft.",
+      neuro: "Warm erythematous swollen lower leg with tenderness."
+    }
+  }
+},
+
+{
+  id: 30,
+  name: "Acute Pancreatitis",
+  presentation: {
+    chiefComplaint: "I've got severe pain in the upper part of my stomach."
+  },
+  hidden: {
+    diagnosis: "Acute Pancreatitis",
+    findings: [
+      { question: "pain", answer: "The pain goes straight through to my back." },
+      { question: "vomit", answer: "I've been vomiting repeatedly." },
+      { question: "alcohol", answer: "I drank heavily over the weekend." }
+    ],
+    examination: {
+      vitals: "BP: 104/66, HR: 116 bpm, Temp: 38.1°C, O2: 97%",
+      heent: "Dry mucous membranes.",
+      chest: "Clear lungs.",
+      abdomen: "Marked epigastric tenderness with guarding.",
+      neuro: "Alert but distressed due to pain."
+    }
+  }
+},
+
+{
+  id: 31,
+  name: "Diverticulitis",
+  presentation: {
+    chiefComplaint: "I've had pain in the lower left side of my abdomen."
+  },
+  hidden: {
+    diagnosis: "Diverticulitis",
+    findings: [
+      { question: "bowel", answer: "I've been constipated recently." },
+      { question: "fever", answer: "I've had chills and fever." },
+      { question: "pain", answer: "It hurts constantly." }
+    ],
+    examination: {
+      vitals: "BP: 124/80, HR: 102 bpm, Temp: 38.2°C, O2: 99%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Tenderness in the left lower quadrant with mild guarding.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 32,
+  name: "Peptic Ulcer Disease",
+  presentation: {
+    chiefComplaint: "I've been getting burning pain in my stomach."
+  },
+  hidden: {
+    diagnosis: "Peptic Ulcer Disease",
+    findings: [
+      { question: "food", answer: "The pain gets better after eating." },
+      { question: "burning", answer: "It's a burning feeling." },
+      { question: "medicine", answer: "I take ibuprofen regularly." }
+    ],
+    examination: {
+      vitals: "BP: 120/78, HR: 78 bpm, Temp: 36.7°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Epigastric tenderness without guarding.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 33,
+  name: "Gastro-oesophageal Reflux Disease",
+  presentation: {
+    chiefComplaint: "I keep getting burning in my chest after meals."
+  },
+  hidden: {
+    diagnosis: "Gastro-oesophageal Reflux Disease",
+    findings: [
+      { question: "food", answer: "It's worse after spicy food." },
+      { question: "lying", answer: "It gets worse when I lie down." },
+      { question: "acid", answer: "I taste acid in my mouth." }
+    ],
+    examination: {
+      vitals: "BP: 118/76, HR: 72 bpm, Temp: 36.5°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Mild epigastric tenderness.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 34,
+  name: "Gout",
+  presentation: {
+    chiefComplaint: "My big toe became extremely painful overnight."
+  },
+  hidden: {
+    diagnosis: "Gout",
+    findings: [
+      { question: "toe", answer: "I can barely let anything touch it." },
+      { question: "alcohol", answer: "I had quite a few beers yesterday." },
+      { question: "previous", answer: "I've had this once before." }
+    ],
+    examination: {
+      vitals: "BP: 130/82, HR: 84 bpm, Temp: 37.6°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Soft.",
+      neuro: "First metatarsophalangeal joint is swollen, red and exquisitely tender."
+    }
+  }
+},
+
+{
+  id: 35,
+  name: "Bell's Palsy",
+  presentation: {
+    chiefComplaint: "One side of my face suddenly became weak."
+  },
+  hidden: {
+    diagnosis: "Bell's Palsy",
+    findings: [
+      { question: "face", answer: "I can't smile properly." },
+      { question: "eye", answer: "I can't fully close my eye." },
+      { question: "pain", answer: "I had pain behind my ear first." }
+    ],
+    examination: {
+      vitals: "BP: 122/80, HR: 72 bpm, Temp: 36.7°C, O2: 100%",
+      heent: "Complete unilateral facial weakness including the forehead.",
+      chest: "Normal.",
+      abdomen: "Soft, non-tender.",
+      neuro: "Cranial nerve VII palsy only; remainder of neurological examination normal."
+    }
+  }
+},
+{
+  id: 36,
+  name: "Influenza",
+  presentation: {
+    chiefComplaint: "I've had a fever, cough, and body aches for two days."
+  },
+  hidden: {
+    diagnosis: "Influenza",
+    findings: [
+      { question: "fever", answer: "High fever with chills." },
+      { question: "cough", answer: "Dry cough that won't stop." },
+      { question: "aches", answer: "My whole body feels sore." }
+    ],
+    examination: {
+      vitals: "BP: 118/76, HR: 104 bpm, Temp: 39.2°C, O2: 97%",
+      heent: "Mild pharyngeal redness without exudate.",
+      chest: "Lungs clear bilaterally.",
+      abdomen: "Soft, non-tender.",
+      neuro: "Alert but fatigued."
+    }
+  }
+},
+{
+  id: 37,
+  name: "COVID-19",
+  presentation: {
+    chiefComplaint: "I've developed a cough and can't taste anything."
+  },
+  hidden: {
+    diagnosis: "COVID-19",
+    findings: [
+      { question: "taste", answer: "I've completely lost my sense of taste and smell." },
+      { question: "cough", answer: "Dry persistent cough." },
+      { question: "breath", answer: "Slightly short of breath climbing stairs." }
+    ],
+    examination: {
+      vitals: "BP: 122/78, HR: 92 bpm, Temp: 38.1°C, O2: 95%",
+      heent: "Nasal congestion present.",
+      chest: "Fine crackles at both lung bases.",
+      abdomen: "Soft, non-tender.",
+      neuro: "No focal neurological deficits."
+    }
+  }
+},
+{
+    id: 38,
+    name: "Aortic Dissection",
+    presentation: {
+      chiefComplaint: "I have a sudden, tearing pain in my chest and back."
+    },
+    hidden: {
+      diagnosis: "Aortic Dissection",
+      findings: [
+        { question: "pain", answer: "It felt like a sudden rip or tear between my shoulder blades." },
+        { question: "onset", answer: "It hit maximum intensity instantly a few minutes ago." },
+        { question: "dizzy", answer: "Yes, I feel extremely lightheaded, like I'm going to pass out." }
+      ],
+      examination: {
+        vitals: "BP Right Arm: 168/95, BP Left Arm: 130/72, HR: 110 bpm, Temp: 36.5°C, O2: 96%",
+        heent: "Pale, cold sweat across face.",
+        chest: "New early diastolic murmur heard along the right sternal border. Lungs clear.",
+        abdomen: "Soft, non-tender. Diminished left femoral pulse relative to the right.",
+        neuro: "Alert but severely distressed. No focal sensory deficits."
+      }
+    }
+  },
+{
+    id: 39,
+    name: "Opioid Toxicity",
+    presentation: {
+      chiefComplaint: "Patient brought in unresponsive by emergency services."
+    },
+    hidden: {
+      diagnosis: "Opioid Toxicity",
+      findings: [
+        { question: "breathing", answer: "Patient is barely breathing with snorting sounds." },
+        { question: "history", answer: "Empty prescription bottle found at the scene." },
+        { question: "onset", answer: "Found unarousable roughly thirty minutes ago." }
+      ],
+      examination: {
+        vitals: "BP: 90/58, HR: 52 bpm, Temp: 35.9°C, O2: 82% on room air, RR: 6/min",
+        heent: "Pinpoint pupils (miosis) bilaterally, non-reactive to light. Cyanosis around lips.",
+        chest: "Shallow, infrequent respirations. Clear lungs, slow regular heart rate.",
+        abdomen: "Soft, markedly decreased or absent bowel sounds.",
+        neuro: "Comatose. Unresponsive to painful stimuli. Generalized flaccid muscle tone."
+      }
+    }
+  },
+{
+  id: 40,
+  name: "Acute Sinusitis",
+  presentation: {
+    chiefComplaint: "I've had facial pain and blocked nose for over a week."
+  },
+  hidden: {
+    diagnosis: "Acute Sinusitis",
+    findings: [
+      { question: "face", answer: "Pain around my cheeks and forehead." },
+      { question: "discharge", answer: "Thick yellow nasal discharge." },
+      { question: "bend", answer: "It hurts more when I lean forward." }
+    ],
+    examination: {
+      vitals: "BP: 120/78, HR: 84 bpm, Temp: 37.8°C, O2: 99%",
+      heent: "Maxillary sinus tenderness with purulent nasal discharge.",
+      chest: "Clear.",
+      abdomen: "Normal.",
+      neuro: "Normal."
+    }
+  }
+},
+{
+    id: 41,
+    name: "Rheumatoid Arthritis",
+    presentation: {
+      chiefComplaint: "My hands are stiff and painful every single morning."
+    },
+    hidden: {
+      diagnosis: "Rheumatoid Arthritis",
+      findings: [
+        { question: "morning", answer: "The stiffness lasts for over an hour after waking up." },
+        { question: "joints", answer: "It affects the knuckles on both of my hands symmetrically." },
+        { question: "fatigue", answer: "Yes, I have been feeling generally run down and exhausted." }
+      ],
+      examination: {
+        vitals: "BP: 122/80, HR: 76 bpm, Temp: 37.1°C, O2: 99%",
+        heent: "Normal.",
+        chest: "Normal cardiorespiratory examination.",
+        abdomen: "Soft, non-tender.",
+        neuro: "Bilateral swelling, warmth, and ulnar deviation tendencies at the MCP and PIP joints. Erythema over knuckles."
+      }
+    }
+  },
+{
+    id: 42,
+    name: "Cholelithiasis",
+    presentation: {
+      chiefComplaint: "Intermittent cramping pain in my right upper stomach."
+    },
+    hidden: {
+      diagnosis: "Cholelithiasis",
+      findings: [
+        { question: "food", answer: "The pain flares up badly about an hour after eating fried food." },
+        { question: "duration", answer: "It hurts for a couple of hours and then goes away completely." },
+        { question: "fever", answer: "No, I haven't had any fevers or chills." }
+      ],
+      examination: {
+        vitals: "BP: 120/75, HR: 80 bpm, Temp: 36.6°C, O2: 100%",
+        heent: "Sclera anicteric.",
+        chest: "Normal.",
+        abdomen: "Mild tenderness to deep palpation in the Right Upper Quadrant. Negative Murphy's sign.",
+        neuro: "Completely normal."
+      }
+    }
+  },
+{
+  id: 43,
+  name: "Sepsis",
+  presentation: {
+    chiefComplaint: "I've become very unwell with fever and confusion."
+  },
+  hidden: {
+    diagnosis: "Sepsis",
+    findings: [
+      { question: "fever", answer: "I've had shaking chills." },
+      { question: "confusion", answer: "My family says I'm confused." },
+      { question: "infection", answer: "I recently had a urine infection." }
+    ],
+    examination: {
+      vitals: "BP: 86/54, HR: 128 bpm, Temp: 39.5°C, O2: 93%",
+      heent: "Dry mucous membranes.",
+      chest: "Tachypnoea with scattered crackles.",
+      abdomen: "Soft, mild suprapubic tenderness.",
+      neuro: "Confused, GCS 14."
+    }
+  }
+},
+{
+  id: 44,
+  name: "Herpes Zoster",
+  presentation: {
+    chiefComplaint: "I have a painful rash on one side of my chest."
+  },
+  hidden: {
+    diagnosis: "Herpes Zoster",
+    findings: [
+      { question: "rash", answer: "It's only on one side." },
+      { question: "pain", answer: "It burns before the rash appeared." },
+      { question: "blisters", answer: "Small blisters have appeared." }
+    ],
+    examination: {
+      vitals: "BP: 120/78, HR: 82 bpm, Temp: 37.3°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Grouped vesicular rash following a thoracic dermatome without crossing the midline."
+    }
+  }
+},
+{
+  id: 45,
+  name: "Conjunctivitis",
+  presentation: {
+    chiefComplaint: "My eye has become red and sticky."
+  },
+  hidden: {
+    diagnosis: "Conjunctivitis",
+    findings: [
+      { question: "discharge", answer: "There's yellow discharge every morning." },
+      { question: "vision", answer: "My vision is normal." },
+      { question: "itch", answer: "It feels itchy and irritated." }
+    ],
+    examination: {
+      vitals: "BP: 118/74, HR: 72 bpm, Temp: 36.8°C, O2: 100%",
+      heent: "Injected conjunctiva with purulent discharge. Pupils equal and reactive.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Normal."
+    }
+  }
+},
+{
+  id: 46,
+  name: "Atrial Fibrillation",
+  presentation: {
+    chiefComplaint: "My heart has been racing and feels irregular."
+  },
+  hidden: {
+    diagnosis: "Atrial Fibrillation",
+    findings: [
+      { question: "palpitations", answer: "It started suddenly." },
+      { question: "breath", answer: "I get breathless walking upstairs." },
+      { question: "dizzy", answer: "I've felt lightheaded." }
+    ],
+    examination: {
+      vitals: "BP: 128/78, HR: 146 bpm irregularly irregular, Temp: 36.8°C, O2: 98%",
+      heent: "Normal.",
+      chest: "Clear lungs.",
+      abdomen: "Soft, non-tender.",
+      neuro: "No focal neurological deficit."
+    }
+  }
+},
+
+{
+  id: 47,
+  name: "Pericarditis",
+  presentation: {
+    chiefComplaint: "Sharp chest pain that's worse when I lie down."
+  },
+  hidden: {
+    diagnosis: "Pericarditis",
+    findings: [
+      { question: "lean", answer: "It feels better when I sit forward." },
+      { question: "breath", answer: "Deep breaths make it worse." },
+      { question: "virus", answer: "I had a viral illness last week." }
+    ],
+    examination: {
+      vitals: "BP: 118/74, HR: 108 bpm, Temp: 37.9°C, O2: 98%",
+      heent: "Normal.",
+      chest: "Pericardial friction rub heard.",
+      abdomen: "Soft.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 48,
+  name: "Infectious Mononucleosis",
+  presentation: {
+    chiefComplaint: "I've had a sore throat and swollen glands for over a week."
+  },
+  hidden: {
+    diagnosis: "Infectious Mononucleosis",
+    findings: [
+      { question: "fatigue", answer: "I'm exhausted all the time." },
+      { question: "throat", answer: "My throat is extremely sore." },
+      { question: "glands", answer: "The glands in my neck are swollen." }
+    ],
+    examination: {
+      vitals: "BP: 118/76, HR: 94 bpm, Temp: 38.2°C, O2: 99%",
+      heent: "Enlarged tonsils with posterior cervical lymphadenopathy.",
+      chest: "Normal.",
+      abdomen: "Mild splenic enlargement.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 49,
+  name: "Iron Deficiency Anaemia",
+  presentation: {
+    chiefComplaint: "I've been unusually tired and short of breath."
+  },
+  hidden: {
+    diagnosis: "Iron Deficiency Anaemia",
+    findings: [
+      { question: "fatigue", answer: "Even climbing stairs is difficult." },
+      { question: "bleeding", answer: "I've had heavy periods." },
+      { question: "craving", answer: "I've been craving ice recently." }
+    ],
+    examination: {
+      vitals: "BP: 108/68, HR: 102 bpm, Temp: 36.6°C, O2: 99%",
+      heent: "Conjunctival pallor.",
+      chest: "Soft systolic flow murmur.",
+      abdomen: "Soft.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 50,
+  name: "Hyperthyroidism",
+  presentation: {
+    chiefComplaint: "I've been losing weight even though I'm eating more."
+  },
+  hidden: {
+    diagnosis: "Hyperthyroidism",
+    findings: [
+      { question: "weight", answer: "I've lost nearly 8 kilograms." },
+      { question: "palpitations", answer: "My heart races frequently." },
+      { question: "heat", answer: "I can't tolerate warm weather." }
+    ],
+    examination: {
+      vitals: "BP: 138/78, HR: 118 bpm, Temp: 37.2°C, O2: 100%",
+      heent: "Fine tremor and mild goitre.",
+      chest: "Tachycardia present.",
+      abdomen: "Soft.",
+      neuro: "Brisk reflexes."
+    }
+  }
+},
+
+{
+  id: 51,
+  name: "Temporal Arteritis",
+  presentation: {
+    chiefComplaint: "I've developed a severe headache around my temple."
+  },
+  hidden: {
+    diagnosis: "Temporal Arteritis",
+    findings: [
+      { question: "jaw", answer: "My jaw aches when chewing." },
+      { question: "vision", answer: "My vision became blurry briefly." },
+      { question: "headache", answer: "The pain is over my temple." }
+    ],
+    examination: {
+      vitals: "BP: 136/82, HR: 88 bpm, Temp: 37.8°C, O2: 99%",
+      heent: "Tender thickened temporal artery.",
+      chest: "Normal.",
+      abdomen: "Soft.",
+      neuro: "No focal deficit."
+    }
+  }
+},
+
+{
+  id: 52,
+  name: "Carpal Tunnel Syndrome",
+  presentation: {
+    chiefComplaint: "My hand keeps going numb."
+  },
+  hidden: {
+    diagnosis: "Carpal Tunnel Syndrome",
+    findings: [
+      { question: "night", answer: "It's worse at night." },
+      { question: "thumb", answer: "My thumb and first fingers go numb." },
+      { question: "shake", answer: "Shaking my hand helps." }
+    ],
+    examination: {
+      vitals: "BP: 122/80, HR: 74 bpm, Temp: 36.6°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Positive Phalen's and Tinel's signs."
+    }
+  }
+},
+
+{
+  id: 53,
+  name: "Benign Paroxysmal Positional Vertigo",
+  presentation: {
+    chiefComplaint: "The room spins whenever I turn my head."
+  },
+  hidden: {
+    diagnosis: "Benign Paroxysmal Positional Vertigo",
+    findings: [
+      { question: "movement", answer: "Rolling over in bed triggers it." },
+      { question: "hearing", answer: "My hearing is normal." },
+      { question: "vomit", answer: "It makes me feel sick." }
+    ],
+    examination: {
+      vitals: "BP: 126/80, HR: 76 bpm, Temp: 36.5°C, O2: 100%",
+      heent: "Horizontal nystagmus during Dix-Hallpike manoeuvre.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Otherwise normal."
+    }
+  }
+},
+
+{
+  id: 54,
+  name: "Ectopic Pregnancy",
+  presentation: {
+    chiefComplaint: "I've got severe lower abdominal pain and some bleeding."
+  },
+  hidden: {
+    diagnosis: "Ectopic Pregnancy",
+    findings: [
+      { question: "period", answer: "My period is late." },
+      { question: "bleeding", answer: "I've had light vaginal bleeding." },
+      { question: "pregnant", answer: "My pregnancy test was positive." }
+    ],
+    examination: {
+      vitals: "BP: 94/58, HR: 118 bpm, Temp: 36.8°C, O2: 98%",
+      heent: "Pale.",
+      chest: "Normal.",
+      abdomen: "Lower abdominal tenderness with guarding.",
+      neuro: "Alert but distressed."
+    }
+  }
+},
+
+{
+  id: 55,
+  name: "Pelvic Inflammatory Disease",
+  presentation: {
+    chiefComplaint: "I've had lower abdominal pain and abnormal discharge."
+  },
+  hidden: {
+    diagnosis: "Pelvic Inflammatory Disease",
+    findings: [
+      { question: "discharge", answer: "It's yellow and unpleasant." },
+      { question: "sex", answer: "It hurts during sex." },
+      { question: "fever", answer: "I've had a fever." }
+    ],
+    examination: {
+      vitals: "BP: 116/74, HR: 104 bpm, Temp: 38.3°C, O2: 99%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Suprapubic tenderness.",
+      neuro: "Normal."
+    }
+  }
+},
+
+{
+  id: 56,
+  name: "Testicular Torsion",
+  presentation: {
+    chiefComplaint: "I've suddenly developed severe pain in one testicle."
+  },
+  hidden: {
+    diagnosis: "Testicular Torsion",
+    findings: [
+      { question: "pain", answer: "It came on suddenly." },
+      { question: "vomit", answer: "I've been feeling sick." },
+      { question: "injury", answer: "No injury." }
+    ],
+    examination: {
+      vitals: "BP: 132/82, HR: 110 bpm, Temp: 36.7°C, O2: 99%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Lower abdominal discomfort.",
+      neuro: "Affected testicle high-riding with absent cremasteric reflex."
+    }
+  }
+},
+
+{
+  id: 57,
+  name: "Acute Angle-Closure Glaucoma",
+  presentation: {
+    chiefComplaint: "I've developed severe pain in one eye."
+  },
+  hidden: {
+    diagnosis: "Acute Angle-Closure Glaucoma",
+    findings: [
+      { question: "vision", answer: "Everything is blurry with halos." },
+      { question: "nausea", answer: "I've been vomiting." },
+      { question: "eye", answer: "The eye is extremely painful." }
+    ],
+    examination: {
+      vitals: "BP: 140/84, HR: 94 bpm, Temp: 36.7°C, O2: 100%",
+      heent: "Red eye with fixed mid-dilated pupil.",
+      chest: "Normal.",
+      abdomen: "Soft.",
+      neuro: "Vision reduced in affected eye."
+    }
+  }
+},
+
+{
+  id: 58,
+  name: "Psoriasis",
+  presentation: {
+    chiefComplaint: "I've developed thick scaly patches on my skin."
+  },
+  hidden: {
+    diagnosis: "Psoriasis",
+    findings: [
+      { question: "itch", answer: "Sometimes they're itchy." },
+      { question: "family", answer: "My father has psoriasis." },
+      { question: "elbows", answer: "It's mainly on my elbows and knees." }
+    ],
+    examination: {
+      vitals: "BP: 120/78, HR: 72 bpm, Temp: 36.6°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Well-demarcated silvery plaques on extensor surfaces."
+    }
+  }
+},
+
+{
+  id: 59,
+  name: "Scabies",
+  presentation: {
+    chiefComplaint: "I've got an intensely itchy rash."
+  },
+  hidden: {
+    diagnosis: "Scabies",
+    findings: [
+      { question: "night", answer: "It's much worse at night." },
+      { question: "family", answer: "Other people at home are itching too." },
+      { question: "hands", answer: "It's between my fingers." }
+    ],
+    examination: {
+      vitals: "BP: 118/76, HR: 74 bpm, Temp: 36.6°C, O2: 100%",
+      heent: "Normal.",
+      chest: "Normal.",
+      abdomen: "Normal.",
+      neuro: "Burrows and excoriations in finger webs and wrists."
+    }
+  }
+},
+
+{
+  id: 60,
+  name: "Acute Kidney Injury",
+  presentation: {
+    chiefComplaint: "I've barely passed any urine today."
+  },
+  hidden: {
+    diagnosis: "Acute Kidney Injury",
+    findings: [
+      { question: "urine", answer: "I've passed very little urine." },
+      { question: "vomit", answer: "I've been vomiting for two days." },
+      { question: "swelling", answer: "My ankles have started swelling." }
+    ],
+    examination: {
+      vitals: "BP: 96/62, HR: 112 bpm, Temp: 37.0°C, O2: 98%",
+      heent: "Dry mucous membranes.",
+      chest: "Clear.",
+      abdomen: "Soft with mild suprapubic fullness.",
+      neuro: "Alert but lethargic."
+    }
+  }
+}
 ];
