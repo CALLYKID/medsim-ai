@@ -66,7 +66,13 @@ Consider:
     
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Gemini Grading Error:", error);
+    console.error("Gemini Grading Error:");
+console.error(error);
+
+if (error instanceof Error) {
+  console.error(error.message);
+  console.error(error.stack);
+}
     return NextResponse.json(
       { historyScore: 20, feedback: "Unable to process clinical history grading via Gemini engine." },
       { status: 500 }
