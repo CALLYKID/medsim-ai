@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
-// FIX: Make sure it gracefully checks for the API key string securely
 const apiKey = process.env.MEDSIMAIANALYSIS;
 
 const ai = new GoogleGenAI({
@@ -9,9 +8,8 @@ const ai = new GoogleGenAI({
 });
 
 export async function POST(req: Request) {
-  // CRITICAL PRODUCTION CHECK: If the hosting provider hasn't loaded the env variable
   if (!apiKey) {
-    console.error("CRITICAL ERROR: MEDSIMAIANALYSIS environment variable is missing on this host environment.");
+    console.error("CRITICAL ERROR: MEDSIMAIANALYSIS environment variable is missing.");
     return NextResponse.json({
       historyScore: 20,
       feedback: "System calibration error: Medical grading engine credentials are unconfigured on live host."
@@ -40,22 +38,22 @@ Consider:
 - Efficiency: Did they follow a logical clinical path without wasting time on unrelated systems?
 `.trim();
 
-    // Request structured JSON explicitly using Gemini's responseSchema
+    // CORRECT METHOD: ai.models.generateContent with native JSON-Schema structural definition
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash", 
       contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
-          type: Type.OBJECT,
+          type: "OBJECT",
           properties: {
             historyScore: {
-              type: Type.INTEGER,
+              type: "INTEGER",
               description: "An integer score from 0 to 40 based on history-taking quality.",
             },
             feedback: {
-              type: Type.STRING,
-              description: "A concise 2-sentence piece of feedback explaining why they received this score and what high-yield history question or physical exam they missed.",
+              type: "STRING",
+              description: "A concise 2-sentence piece of feedback explaining why they received this score.",
             },
           },
           required: ["historyScore", "feedback"],
@@ -63,7 +61,6 @@ Consider:
       },
     });
 
-    // Gemini guarantees the text returned matches our schema completely
     const rawText = response.text ? response.text.trim() : "{}";
     const data = JSON.parse(rawText);
     
