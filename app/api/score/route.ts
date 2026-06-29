@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import Groq from "groq-sdk";
 
-const apiKey = process.env.MEDSIMAIANALYSIS;
+const apiKey = process.env.GROQ_API_KEY;
 
-const ai = new GoogleGenAI({
+const groq = new Groq({
   apiKey: apiKey || "",
 });
 
+console.log("Score endpoint called via Groq", Date.now());
+
 export async function POST(req: Request) {
   if (!apiKey) {
-    console.error("CRITICAL ERROR: MEDSIMAIANALYSIS environment variable is missing.");
+    console.error("CRITICAL ERROR: GROQ_API_KEY environment variable is missing.");
     return NextResponse.json({
       historyScore: 20,
       feedback: "System calibration error: Medical grading engine credentials are unconfigured on live host."
@@ -32,49 +34,49 @@ STUDENT'S CLINICAL INVESTIGATION SUMMARY:
 ${investigationSummary}
 
 TASK:
-Evaluate the history-taking question transcript out of 40 points total.
+Evaluate the history-taking question transcript out of 100 points total.
 Consider:
 - Relevancy: Did they ask questions targeting the chief complaint and filtering key differentials?
 - Efficiency: Did they follow a logical clinical path without wasting time on unrelated systems?
+
+OUTPUT SPECIFICATION:
+You must respond with a strictly valid JSON object matching this exact format:
+{
+  "historyScore": <integer between 0 and 40>,
+  "feedback": "<concise 2-sentence feedback string>"
+}
 `.trim();
 
-    // CORRECT METHOD: ai.models.generateContent with native JSON-Schema structural definition
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", 
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "OBJECT",
-          properties: {
-            historyScore: {
-              type: "INTEGER",
-              description: "An integer score from 0 to 40 based on history-taking quality.",
-            },
-            feedback: {
-              type: "STRING",
-              description: "A concise 2-sentence piece of feedback explaining why they received this score.",
-            },
-          },
-          required: ["historyScore", "feedback"],
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.1, // Low temperature enforces strict rule adherence
+      response_format: { type: "json_object" }, // Guarantees structural JSON compilation
+      messages: [
+        {
+          role: "system",
+          content: "You are a rigid grading engine that outputs nothing but structured JSON strings.",
         },
-      },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
 
-    const rawText = response.text ? response.text.trim() : "{}";
+    const rawText = completion.choices[0].message.content ? completion.choices[0].message.content.trim() : "{}";
     const data = JSON.parse(rawText);
     
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Gemini Grading Error:");
-console.error(error);
+    console.error("Groq Grading Error:");
+    console.error(error);
 
-if (error instanceof Error) {
-  console.error(error.message);
-  console.error(error.stack);
-}
+    if (error instanceof Error) {
+      console.error(error.message);
+      console.error(error.stack);
+    }
     return NextResponse.json(
-      { historyScore: 20, feedback: "Unable to process clinical history grading via Gemini engine." },
+      { historyScore: 20, feedback: "Unable to process clinical history grading via Groq engine." },
       { status: 500 }
     );
   }
