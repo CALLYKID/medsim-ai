@@ -1,12 +1,23 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Initialize the Google Gen AI SDK
+// FIX: Make sure it gracefully checks for the API key string securely
+const apiKey = process.env.MEDSIMAIANALYSIS;
+
 const ai = new GoogleGenAI({
-  apiKey: process.env.MEDSIMAIANALYSIS!,
+  apiKey: apiKey || "",
 });
 
 export async function POST(req: Request) {
+  // CRITICAL PRODUCTION CHECK: If the hosting provider hasn't loaded the env variable
+  if (!apiKey) {
+    console.error("CRITICAL ERROR: MEDSIMAIANALYSIS environment variable is missing on this host environment.");
+    return NextResponse.json({
+      historyScore: 20,
+      feedback: "System calibration error: Medical grading engine credentials are unconfigured on live host."
+    });
+  }
+
   try {
     const body = await req.json();
     const { investigationSummary, chiefComplaint, correctDiagnosis, finalDiagnosis } = body;
@@ -53,7 +64,9 @@ Consider:
     });
 
     // Gemini guarantees the text returned matches our schema completely
-    const data = JSON.parse(response.text || "{}");
+    const rawText = response.text ? response.text.trim() : "{}";
+    const data = JSON.parse(rawText);
+    
     return NextResponse.json(data);
   } catch (error) {
     console.error("Gemini Grading Error:", error);
