@@ -170,23 +170,18 @@ export default function Home() {
 
   // ENGINE 1: INITIALIZE AND LOAD CLOUD BACKUP IF SIGNED IN
   useEffect(() => {
-    const isSynced = localStorage.getItem("medsim_auth_status") === "true";
-    if (isSynced) {
-      const savedLogs = localStorage.getItem("medsim_cloud_backup_logs");
-      if (savedLogs) {
-        setShiftHistory(JSON.parse(savedLogs));
-      }
-    }
-  }, []);
+  const savedLogs = localStorage.getItem("medsim_shift_logs");
+  if (savedLogs) {
+    setShiftHistory(JSON.parse(savedLogs));
+  }
+}, []);
 
-  // ENGINE 2: AUTOMATIC BACKUP SYNC LAYER
-  useEffect(() => {
-    const isSynced = localStorage.getItem("medsim_auth_status") === "true";
-    // ONLY back up data if the user explicitly chose to sign in
-    if (isSynced && shiftHistory.length > 0) {
-      localStorage.setItem("medsim_cloud_backup_logs", JSON.stringify(shiftHistory));
-    }
-  }, [shiftHistory]);
+useEffect(() => {
+  localStorage.setItem(
+    "medsim_shift_logs",
+    JSON.stringify(shiftHistory)
+  );
+}, [shiftHistory]);
 
 
 const activeCaseRef = useRef<HTMLDivElement>(null);
@@ -681,17 +676,6 @@ useEffect(() => {
 
   // -------------------------
   // MAIN MENU DASHBOARD (PREMIUM HOSPITAL PORTAL)
-  // -------------------------
-  // Inside the dashboard return layer, right above your <h1> title:
-  const isSyncedMode = typeof window !== "undefined" && localStorage.getItem("medsim_auth_status") === "true";
-
-  // Inside the header div, near your live environment pulse:
-  <div className="flex items-center gap-2 mb-1">
-    <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${isSyncedMode ? "bg-emerald-400" : "bg-amber-400"}`} />
-    <span className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
-      {isSyncedMode ? "Cloud Sync Enabled (Backup Active)" : "Local Session (No Backup)"}
-    </span>
-  </div>
 
 
   const averageScore = shiftHistory.length > 0 
