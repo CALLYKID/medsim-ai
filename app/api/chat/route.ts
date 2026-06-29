@@ -18,14 +18,15 @@ export async function POST(req: Request) {
           .join("\n")
       : "No clinical findings available.";
 
-  // Format existing chat log cleanly for Groq's message schema
-  // We reverse it because your frontend array stores newest items at index 0
+   // Format existing chat log cleanly for Groq's message schema
   const formattedHistory = [...history]
-    .reverse()
+    .sort((a: any, b: any) => a.id - b.id)
     .map((msg: any) => ({
-      role: msg.role === "user" ? "user" : "assistant",
+      // FIX HERE: Cast the string strictly to the type expected by Groq's SDK
+      role: (msg.role === "user" ? "user" : "assistant") as "user" | "assistant",
       content: msg.text,
     }));
+
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
