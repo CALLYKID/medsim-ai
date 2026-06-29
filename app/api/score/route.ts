@@ -34,10 +34,10 @@ STUDENT'S CLINICAL INVESTIGATION SUMMARY:
 ${investigationSummary}
 
 TASK:
-Evaluate the history-taking question transcript out of 100 points total.
+Evaluate the history-taking question transcript out of 40 points total.
 Consider:
-- Relevancy: Did they ask questions targeting the chief complaint and filtering key differentials?
-- Efficiency: Did they follow a logical clinical path without wasting time on unrelated systems?
+- Relevancy (up to 20 pts): Did they ask questions targeting the chief complaint and filtering key differentials?
+- Efficiency (up to 20 pts): Did they follow a logical clinical path without wasting time on unrelated systems?
 
 OUTPUT SPECIFICATION:
 You must respond with a strictly valid JSON object matching this exact format:
