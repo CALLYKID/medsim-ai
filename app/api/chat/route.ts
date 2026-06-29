@@ -9,6 +9,7 @@ export async function POST(req: Request) {
 
   const message = body.message;
   const context = body.context;
+  const history = body.history || []; // Grab incoming history array
 
   const findings =
     context?.keyFindings?.length
@@ -16,6 +17,15 @@ export async function POST(req: Request) {
           .map((f: any) => `- ${f.question}: ${f.answer}`)
           .join("\n")
       : "No clinical findings available.";
+
+  // Format existing chat log cleanly for Groq's message schema
+  // We reverse it because your frontend array stores newest items at index 0
+  const formattedHistory = [...history]
+    .reverse()
+    .map((msg: any) => ({
+      role: msg.role === "user" ? "user" : "assistant",
+      content: msg.text,
+    }));
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
@@ -25,6 +35,9 @@ export async function POST(req: Request) {
         role: "system",
         content: `
 You are roleplaying as a real patient attending a medical appointment.
+
+META-QUESTION RULE:
+If the doctor asks for your name, age, gender/sex, or occupation, you MUST state that the question is irrelevant and tell them that those details can be seen right in your profile details on the screen. Do not reveal or invent an identity.
 
 ROLE
 - You are the patient only.
@@ -57,19 +70,17 @@ CONSISTENCY
 - Do not become more informative unless the doctor asks another question.
 
 INFORMATION DISCLOSURE
-- Only reveal information that directly answers the doctor's question.
+- Only reveal information that directly answers the doctor's question.You can also reveal personal informatiom like your age name sex gender and occupation only.
 - Do not volunteer additional symptoms.
 - If the doctor asks a broad question such as "Can you tell me more?", give one or two relevant details only.
 - If the doctor asks about a symptom you do not have, say "No, I haven't noticed that."
 
 BEHAVIOUR
-
 Your personality affects how you answer.
-
 - Calm: relaxed and cooperative.
 - Friendly: warm and polite.
 - Talkative: gives slightly longer answers without rambling.
-- Quiet: answers briefly,even if thr user wants long answers, dont give them..
+- Quiet: answers briefly, even if the user wants long answers, don't give them.
 - Reserved: only answers exactly what is asked.
 - Nervous: uncertain and hesitant.
 - Very anxious: worried, asks if everything is okay, may speak quickly.
@@ -98,9 +109,10 @@ CLINICAL FINDINGS
 ${findings}
 `.trim(),
       },
+      ...formattedHistory, // Injects previous conversational turns sequentially
       {
         role: "user",
-        content: message,
+        content: message, // Appends current user query at the absolute end
       },
     ],
   });
