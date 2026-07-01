@@ -17,10 +17,10 @@ export default function LandingPage() {
           <div className="flex items-center gap-6 text-xs font-medium text-gray-400">
             <a href="#features" className="hover:text-white transition-colors">Core Modules</a>
             <a href="#metrics" className="hover:text-white transition-colors">Metrics Matrix</a>
-<Link href="/labs" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white">
-  Launch Console
-</Link>
-
+            <Link href="/dashboard" className="hover:text-white transition-colors">Performance Logs</Link>
+            <Link href="/labs" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white">
+              Launch Console
+            </Link>
           </div>
         </nav>
 
@@ -42,17 +42,15 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-
-<Link
-  href="/labs"
-  className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center"
->
-  Enter Clinical Lab
-</Link>
-
-            <a href="#features" className="w-full sm:w-auto bg-white/5 hover:bg-white/10 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/5 text-gray-300">
-              Review Lab Capabilities
-            </a>
+            <Link
+              href="/labs"
+              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center"
+            >
+              Enter Clinical Lab
+            </Link>
+            <Link href="/dashboard" className="w-full sm:w-auto bg-white/5 hover:bg-white/10 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/5 text-gray-300 text-center">
+              View Analytics Dashboard
+            </Link>
           </div>
         </header>
 
