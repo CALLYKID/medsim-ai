@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PageTransition from "./components/PageTransition";
 
-// Simple custom hook to handle scroll reveal animations cleanly
+// Custom hook to handle scroll reveal animations cleanly
 function useIntersectionObserver() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -14,7 +14,7 @@ function useIntersectionObserver() {
         if (entry.isIntersecting) {
           entry.target.classList.add("opacity-100", "translate-y-0");
           entry.target.classList.remove("opacity-0", "translate-y-8");
-          observer.unobserve(entry.target); // Stop observing once animated
+          observer.unobserve(entry.target);
         }
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
@@ -30,7 +30,6 @@ function useIntersectionObserver() {
   return ref;
 }
 
-// Animated wrapper component for sections/cards
 function ScrollReveal({ children, delay = "" }: { children: React.ReactNode; delay?: string }) {
   const ref = useIntersectionObserver();
   return (
@@ -54,8 +53,8 @@ export default function LandingPage() {
         <nav className="w-full max-w-6xl mx-auto px-6 py-5 flex justify-between items-center border-b border-white/5 relative z-50">
           
           {/* ENHANCED HIGH-VISIBILITY LOGO */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+          <Link href="/" className="flex items-center gap-3 group shrink-0 focus:outline-none">
+            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 group-hover:scale-105 group-focus:scale-105 transition-transform duration-300">
               <svg 
                 className="w-4.5 h-4.5 text-white animate-pulse" 
                 fill="none" 
@@ -81,9 +80,9 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-6 text-xs font-medium text-gray-400">
             <a 
               href="#features" 
-              className="relative py-1 hover:text-white transition-colors duration-300 block
+              className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
                 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
-                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Core Modules
@@ -91,9 +90,9 @@ export default function LandingPage() {
             
             <a 
               href="#metrics" 
-              className="relative py-1 hover:text-white transition-colors duration-300 block
+              className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
                 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
-                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Metrics Matrix
@@ -101,9 +100,9 @@ export default function LandingPage() {
             
             <Link 
               href="/dashboard" 
-              className="relative py-1 hover:text-white transition-colors duration-300 block
+              className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
                 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
-                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Performance Logs
@@ -111,10 +110,10 @@ export default function LandingPage() {
             
             <Link 
               href="/labs" 
-              className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white relative overflow-hidden group/btn"
+              className="bg-white/5 hover:bg-white/10 focus:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white relative overflow-hidden group/btn focus:outline-none"
             >
               <span className="relative z-10">Launch Console</span>
-              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left transition-transform duration-300 ease-out" />
+              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left group-focus/btn:scale-x-100 transition-transform duration-300 ease-out" />
             </Link>
           </div>
 
@@ -176,27 +175,48 @@ export default function LandingPage() {
         <header className="max-w-4xl mx-auto text-center px-6 pt-16 pb-20 relative">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-950/40 border border-indigo-500/30 mb-6 animate-fade-in">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="text-[10px] font-bold tracking-widest text-indigo-300 uppercase">OSCE Simulation Engine v2.4</span>
+          {/* HIGH-END INTEGRATED MISSION ONBOARDING CAPSULE */}
+          <div className="inline-flex flex-col items-center mb-8 relative group animate-fade-in">
+            {/* Soft Ambient Background Glow */}
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            {/* The Badge Container */}
+            <div className="relative flex flex-col sm:flex-row items-center gap-3 px-4 py-2.5 rounded-xl bg-[#0a0f1d]/60 border border-indigo-500/20 backdrop-blur-md shadow-2xl">
+              <div className="flex items-center gap-2 border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 sm:pr-3 shrink-0">
+                <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="text-[10px] font-black tracking-widest text-indigo-300 uppercase font-sans">
+                  OSCE ENGINE v2.4
+                </span>
+              </div>
+              <p className="text-xs font-medium text-gray-300 tracking-wide text-center sm:text-left">
+                You are the medical examiner.{" "}
+                <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent font-bold">
+                  Interrogate the patient, order examinations, and determine the exact diagnosis.
+                </span>
+              </p>
+            </div>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-white via-gray-200 to-gray-500 bg-clip-text text-transparent leading-[1.15] mb-6">
             Next-Generation Clinical Assessment for Medical Candidates
           </h1>
           
-          <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-8 font-medium">
+          <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-10 font-medium">
             Bridge the gap between theoretical pathology and high-stakes diagnostic decision making. Train under a strict live-telemetry monitor mimicking actual UK diagnostic evaluation arrays.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* UPGRADED PRIMARY HOVER STATE FEEDBACK CONTROLLERS */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto sm:max-w-none">
             <Link
               href="/labs"
-              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center"
+              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.99] hover:shadow-indigo-600/30 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#070a12]"
             >
-              Enter Clinical Lab
+              Enter Clinical Lab &rarr;
             </Link>
-            <Link href="/dashboard" className="w-full sm:w-auto bg-white/5 hover:bg-white/10 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-white/5 text-gray-300 text-center">
+            <Link 
+              href="/dashboard" 
+              className="w-full sm:w-auto bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99] px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 border border-white/5 hover:border-white/20 text-gray-300 hover:text-white text-center focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#070a12]"
+            >
               View Analytics Dashboard
             </Link>
           </div>
@@ -206,24 +226,24 @@ export default function LandingPage() {
         <section id="metrics" className="max-w-5xl mx-auto px-6 py-12 border-t border-white/5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <ScrollReveal>
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-white/10 transition-colors duration-300">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Dynamic Persona</p>
+              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-indigo-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Dynamic Persona</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Algorithmic Patients</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">AI systems compute structural pain tolerances, localized anxiety states, and distinct occupational histories dynamically per intake session.</p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-100">
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-white/10 transition-colors duration-300">
-                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Objective Evaluation</p>
+              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-emerald-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Objective Evaluation</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Physical Assessments</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">Directly interface with objective report panels including raw clinical breakdowns of Vitals, HEENT, Thoracic, and Abdominal telemetry mappings.</p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-200">
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-white/10 transition-colors duration-300">
-                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Portfolio Architecture</p>
+              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-amber-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Portfolio Architecture</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Live Command Center</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">Session logging preserves global performance matrices, precision accuracy rates, and differential target matching for admissions board presentation.</p>
               </div>
