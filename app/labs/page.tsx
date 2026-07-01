@@ -456,31 +456,48 @@ export default function LabsPage() {
               </p>
             </div>
 
-            <div className="space-y-3 mt-4">
-              <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                disabled={!hasStarted || isResponding || isGrading || isSessionEnded}
-                placeholder={!hasStarted ? "Start consultation timer above to write..." : isSessionEnded ? "Case finalized." : "Ask a clinical question..."}
-                className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault(); 
-                    if (question.trim() && !isResponding && !isGrading && !isSessionEnded && hasStarted) {
-                      askQuestion();
-                    }
-                  }
-                }}
-              />
+            {/* DYNAMIC SCROLL EXPANDING FIELD CONTROLLER */}
+<div className="space-y-3 mt-4">
+  <textarea
+    value={question}
+    onChange={(e) => {
+      setQuestion(e.target.value);
+      // Dynamically reset height then scale up based on text contents
+      e.target.style.height = "auto";
+      e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`; // 160px is the cap height limit
+    }}
+    disabled={!hasStarted || isResponding || isGrading || isSessionEnded}
+    placeholder={!hasStarted ? "Start consultation timer above to write..." : isSessionEnded ? "Case finalized." : "Ask a clinical question..."}
+    rows={1}
+    className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed resize-none min-h-[44px] max-h-[160px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10"
+    onKeyDown={(e) => {
+      // Allows user to press enter to submit immediately without dropping lines, unless they click Shift + Enter
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault(); 
+        if (question.trim() && !isResponding && !isGrading && !isSessionEnded && hasStarted) {
+          askQuestion();
+          // Reset target frame heights perfectly back to baseline defaults upon submission
+          const target = e.target as HTMLTextAreaElement;
+          target.style.height = "auto";
+        }
+      }
+    }}
+  />
 
-              <button
-                onClick={askQuestion}
-                disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-950 disabled:text-gray-500 disabled:cursor-not-allowed p-3 rounded-xl text-white font-medium text-sm transition-colors"
-              >
-                Ask Question
-              </button>
-            </div>
+  <button
+    onClick={() => {
+      askQuestion();
+      // Safely check and revert textarea dimensions manually on mouse click submission
+      const textElement = document.querySelector("textarea");
+      if (textElement) textElement.style.height = "auto";
+    }}
+    disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
+    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-950 disabled:text-gray-500 disabled:cursor-not-allowed p-3 rounded-xl text-white font-medium text-sm transition-colors"
+  >
+    Ask Question
+  </button>
+</div>
+
 
             <div 
               ref={chatContainerRef}
