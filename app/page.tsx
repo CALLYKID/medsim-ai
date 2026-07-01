@@ -10,16 +10,69 @@ export default function LandingPage() {
         
         {/* NAV BAR */}
         <nav className="w-full max-w-6xl mx-auto px-6 py-5 flex justify-between items-center border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/50" />
-            <span className="font-mono text-sm tracking-wider font-bold uppercase">MedSim.AI</span>
-          </div>
+          
+          {/* UPGRADED UNIQUE BRAND LOGO */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+              <svg 
+                className="w-4 h-4 text-white animate-pulse" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor" 
+                strokeWidth={3}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-black tracking-wider text-white uppercase font-sans leading-none">
+                MEDSIM<span className="text-indigo-400">.AI</span>
+              </span>
+              <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold leading-none mt-0.5">
+                Clinical Engine
+              </span>
+            </div>
+          </Link>
+
+          {/* PREMIUM UX NAV BUTTONS WITH STRETCHING HOVER UNDERLINE */}
           <div className="flex items-center gap-6 text-xs font-medium text-gray-400">
-            <a href="#features" className="hover:text-white transition-colors">Core Modules</a>
-            <a href="#metrics" className="hover:text-white transition-colors">Metrics Matrix</a>
-            <Link href="/dashboard" className="hover:text-white transition-colors">Performance Logs</Link>
-            <Link href="/labs" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white">
-              Launch Console
+            <a 
+              href="#features" 
+              className="relative py-1 hover:text-white transition-colors duration-300 block
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:transition-transform after:duration-300 after:ease-out"
+            >
+              Core Modules
+            </a>
+            
+            <a 
+              href="#metrics" 
+              className="relative py-1 hover:text-white transition-colors duration-300 block
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:transition-transform after:duration-300 after:ease-out"
+            >
+              Metrics Matrix
+            </a>
+            
+            <Link 
+              href="/dashboard" 
+              className="relative py-1 hover:text-white transition-colors duration-300 block
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left
+                after:transition-transform after:duration-300 after:ease-out"
+            >
+              Performance Logs
+            </Link>
+            
+            <Link 
+              href="/labs" 
+              className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white relative overflow-hidden group/btn"
+            >
+              <span className="relative z-10">Launch Console</span>
+              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left transition-transform duration-300 ease-out" />
             </Link>
           </div>
         </nav>
