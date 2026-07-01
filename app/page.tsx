@@ -175,23 +175,23 @@ export default function LandingPage() {
         <header className="max-w-4xl mx-auto text-center px-6 pt-16 pb-20 relative">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
           
-          {/* HIGH-END INTEGRATED MISSION ONBOARDING CAPSULE */}
-          <div className="inline-flex flex-col items-center mb-8 relative group animate-fade-in">
-            {/* Soft Ambient Background Glow */}
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+          {/* ENHANCED HIGHER IMPACT MISSION ONBOARDING CAPSULE */}
+          <div className="inline-flex flex-col items-center mb-10 relative group w-full max-w-2xl mx-auto animate-fade-in">
+            {/* Ambient Background Glow */}
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
             
-            {/* The Badge Container */}
-            <div className="relative flex flex-col sm:flex-row items-center gap-3 px-4 py-2.5 rounded-xl bg-[#0a0f1d]/60 border border-indigo-500/20 backdrop-blur-md shadow-2xl">
-              <div className="flex items-center gap-2 border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 sm:pr-3 shrink-0">
-                <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-                <span className="text-[10px] font-black tracking-widest text-indigo-300 uppercase font-sans">
-                  OSCE ENGINE v2.4
+            {/* Container with scaled-up text hierarchy */}
+            <div className="relative flex flex-col md:flex-row items-center gap-4 px-5 py-3.5 rounded-2xl bg-[#0a0f1d]/80 border border-indigo-500/30 backdrop-blur-md shadow-2xl w-full">
+              <div className="flex items-center gap-2 border-b md:border-b-0 md:border-r border-white/10 pb-2 md:pb-0 md:pr-4 shrink-0">
+                <span className="h-2.5 w-2.5 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="text-xs font-black tracking-widest text-indigo-300 uppercase font-sans">
+                  OSCE MISSION
                 </span>
               </div>
-              <p className="text-xs font-medium text-gray-300 tracking-wide text-center sm:text-left">
+              <p className="text-sm sm:text-base font-normal text-gray-200 tracking-wide text-center md:text-left leading-relaxed">
                 You are the medical examiner.{" "}
-                <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent font-bold">
-                  Interrogate the patient, order examinations, and determine the exact diagnosis.
+                <span className="bg-gradient-to-r from-indigo-300 via-indigo-400 to-purple-400 bg-clip-text text-transparent font-bold">
+                  Interrogate the patient, perform diagnostic tasks, and rule the diagnosis.
                 </span>
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <ScrollReveal>
               <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-indigo-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Dynamic Persona</p>
+                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Dynamic Persona</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Algorithmic Patients</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">AI systems compute structural pain tolerances, localized anxiety states, and distinct occupational histories dynamically per intake session.</p>
               </div>
@@ -235,7 +235,7 @@ export default function LandingPage() {
 
             <ScrollReveal delay="delay-100">
               <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-emerald-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Objective Evaluation</p>
+                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Objective Evaluation</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Physical Assessments</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">Directly interface with objective report panels including raw clinical breakdowns of Vitals, HEENT, Thoracic, and Abdominal telemetry mappings.</p>
               </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
 
             <ScrollReveal delay="delay-200">
               <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-amber-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wildest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Portfolio Architecture</p>
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Portfolio Architecture</p>
                 <h3 className="text-xl font-bold mb-2 text-gray-100">Live Command Center</h3>
                 <p className="text-xs text-gray-400 leading-relaxed">Session logging preserves global performance matrices, precision accuracy rates, and differential target matching for admissions board presentation.</p>
               </div>
