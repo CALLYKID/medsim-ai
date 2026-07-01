@@ -1,21 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import PageTransition from "./components/PageTransition";
 
 export default function LandingPage() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-[#070a12] text-white selection:bg-indigo-500/30 overflow-x-hidden">
         
-        {/* NAV BAR */}
-        <nav className="w-full max-w-6xl mx-auto px-6 py-5 flex justify-between items-center border-b border-white/5">
+        {/* RESPONSIVE NAV BAR */}
+        <nav className="w-full max-w-6xl mx-auto px-6 py-5 flex justify-between items-center border-b border-white/5 relative z-50">
           
-          {/* UPGRADED UNIQUE BRAND LOGO */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+          {/* ENHANCED HIGH-VISIBILITY LOGO */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
               <svg 
-                className="w-4 h-4 text-white animate-pulse" 
+                className="w-4.5 h-4.5 text-white animate-pulse" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor" 
@@ -23,20 +26,20 @@ export default function LandingPage() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-black tracking-wider text-white uppercase font-sans leading-none">
+              <span className="text-base font-black tracking-wider text-white uppercase font-sans leading-none">
                 MEDSIM<span className="text-indigo-400">.AI</span>
               </span>
-              <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold leading-none mt-0.5">
+              <span className="text-[9px] text-gray-400 uppercase tracking-widest font-black leading-none mt-1">
                 Clinical Engine
               </span>
             </div>
           </Link>
 
-          {/* PREMIUM UX NAV BUTTONS WITH STRETCHING HOVER UNDERLINE */}
-          <div className="flex items-center gap-6 text-xs font-medium text-gray-400">
+          {/* DESKTOP NAV BUTTONS (Hidden on mobile) */}
+          <div className="hidden md:flex items-center gap-6 text-xs font-medium text-gray-400">
             <a 
               href="#features" 
               className="relative py-1 hover:text-white transition-colors duration-300 block
@@ -73,6 +76,59 @@ export default function LandingPage() {
             >
               <span className="relative z-10">Launch Console</span>
               <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left transition-transform duration-300 ease-out" />
+            </Link>
+          </div>
+
+          {/* COOL MORPHING HAMBURGER BUTTON */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 text-gray-400 hover:text-white transition-colors focus:outline-none z-50"
+            aria-label="Toggle Menu"
+          >
+            <span className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
+              isMobileMenuOpen ? "rotate-45 translate-y-2" : ""
+            }`} />
+            <span className={`h-0.5 w-6 bg-current transition-all duration-200 ease-in-out ${
+              isMobileMenuOpen ? "opacity-0" : ""
+            }`} />
+            <span className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
+              isMobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+            }`} />
+          </button>
+
+          {/* SMOOTH SLIDE-DOWN & FADE MOBILE DROPDOWN DRAWER */}
+          <div className={`absolute top-full left-0 w-full bg-[#0a0e1a]/95 backdrop-blur-lg border-b border-white/10 px-6 py-4 flex flex-col gap-4 md:hidden shadow-2xl transition-all duration-300 ease-out origin-top ${
+            isMobileMenuOpen 
+              ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto" 
+              : "opacity-0 scale-y-95 -translate-y-2 pointer-events-none"
+          }`}>
+            <a 
+              href="#features" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+            >
+              Core Modules
+            </a>
+            <a 
+              href="#metrics" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+            >
+              Metrics Matrix
+            </a>
+            <Link 
+              href="/dashboard" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+            >
+              Performance Logs
+            </Link>
+            <Link 
+              href="/labs" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 px-4 py-3 rounded-xl text-center text-sm font-bold uppercase tracking-wider transition-all text-white shadow-lg shadow-indigo-600/20"
+            >
+              Launch Console
             </Link>
           </div>
         </nav>
