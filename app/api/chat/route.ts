@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
 
   const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "GPT OSS 120B / Qwen3.6 27B",
     max_completion_tokens: 120,
     messages: [
       {
