@@ -48,7 +48,7 @@ You must respond with a strictly valid JSON object matching this exact format:
 `.trim();
 
     const completion = await groq.chat.completions.create({
-      model: "GPT OSS 120B / Qwen3.6 27B",
+      model: "GPT OSS 120B",
       temperature: 0.1, // Low temperature enforces strict rule adherence
       response_format: { type: "json_object" }, // Guarantees structural JSON compilation
       messages: [
