@@ -59,7 +59,7 @@ function generatePatient(caseData: Disease) {
     ...caseData,
     presentation: {
       ...caseData.presentation,
-      physicalExam: caseData.presentation?.physicalExam ?? {
+      physicalExam: caseData.hidden?.examination ?? {
         vitals: "Vitals within acceptable operational variance.",
         heent: "HEENT evaluation clear.",
         chest: "Lungs clear to auscultation bilaterally.",
@@ -94,6 +94,15 @@ function generatePatient(caseData: Disease) {
 }
 
 type GeneratedPatient = Disease & {
+  presentation: Disease["presentation"] & {
+    physicalExam: {
+      vitals: string;
+      heent: string;
+      chest: string;
+      abdomen: string;
+      neuro: string;
+    };
+  };
   patient: {
     name: string;
     firstName: string;
@@ -118,6 +127,7 @@ type GeneratedPatient = Disease & {
     occupation: string;
   };
 };
+
 
 function StreamingText({ text, speed = 4 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState("");
