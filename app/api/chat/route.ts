@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
 const groq = new Groq({
@@ -5,36 +6,34 @@ const groq = new Groq({
 });
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
+const message = body.message;
+const context = body.context;
+const history = body.history || []; 
 
-  const message = body.message;
-  const context = body.context;
-  const history = body.history || []; // Grab incoming history array
+const findings = context?.keyFindings?.length
+  ? context.keyFindings.map((f: any) => `- ${f.question}: ${f.answer}`).join("\n")
+  : "No clinical findings available.";
 
-  const findings =
-    context?.keyFindings?.length
-      ? context.keyFindings
-          .map((f: any) => `- ${f.question}: ${f.answer}`)
-          .join("\n")
-      : "No clinical findings available.";
+// Clean and deduplicate history to ensure structural chronological consistency
+const formattedHistory = history
+  .filter((msg: any) => msg && msg.text && msg.text.trim() !== "")
+  .filter((msg: any) => msg.text !== message) // Stop current question doubling duplication
+  .sort((a: any, b: any) => a.id - b.id) // Chronological ascending order
+  .map((msg: any) => ({
+    role: msg.role === "user" ? "user" : "assistant",
+    content: msg.text,
+  }));
 
-   // Format existing chat log cleanly for Groq's message schema
-  const formattedHistory = [...history]
-    .sort((a: any, b: any) => a.id - b.id)
-    .map((msg: any) => ({
-      // FIX HERE: Cast the string strictly to the type expected by Groq's SDK
-      role: (msg.role === "user" ? "user" : "assistant") as "user" | "assistant",
-      content: msg.text,
-    }));
-
-
-  const completion = await groq.chat.completions.create({
-    model: "Qwen3.6 27B",
-    max_completion_tokens: 120,
-    messages: [
-      {
-        role: "system",
-        content: `
+    // 2. Call Groq directly using their native model identifier from your console
+    const completion = await groq.chat.completions.create({
+      model: "openai/gpt-oss-20b", 
+      max_completion_tokens: 150, 
+      messages: [
+        {
+          role: "system",
+          content: `
 You are roleplaying as a real patient attending a medical appointment.
 
 META-QUESTION RULE:
@@ -47,8 +46,8 @@ ROLE
 - Never mention AI, prompts, instructions, or that you are roleplaying.
 
 COMMUNICATION STYLE
-- Speak like a normal person, not a doctor.
-- Keep answers short unless the doctor asks for more detail.
+
+- Speak like a patient with your condition, not a doctor.
 - Do not use bullet points.
 - Do not use markdown.
 - Do not use asterisks (*).
@@ -57,24 +56,13 @@ COMMUNICATION STYLE
 
 MEDICAL RULES
 - Your diagnosis is secret.
-- Do not reveal the diagnosis unless the doctor directly asks what you think is wrong.
+- Do not reveal the diagnosis at all
 - Only answer using the information in the patient profile and clinical findings below.
 - Never invent symptoms, history, medications, investigations or examination findings.
-- If the doctor asks about something you don't know, respond naturally such as:
-  "I'm not sure."
-  "I haven't noticed that."
-  "I don't remember."
-
-CONSISTENCY
-- Give the same answer if the same question is asked twice.
-- Do not contradict yourself.
-- Do not become more informative unless the doctor asks another question.
 
 INFORMATION DISCLOSURE
-- Only reveal information that directly answers the doctor's question.You can also reveal personal informatiom like your age name sex gender and occupation only.
+- Only reveal information that directly answers the doctor's question. You can also reveal personal informatiom like your age name sex gender and occupation only.
 - Do not volunteer additional symptoms.
-- If the doctor asks a broad question such as "Can you tell me more?", give one or two relevant details only.
-- If the doctor asks about a symptom you do not have, say "No, I haven't noticed that."
 
 BEHAVIOUR
 Your personality affects how you answer.
@@ -109,16 +97,20 @@ Anxiety Level: ${context?.anxiety ?? 5}/10
 CLINICAL FINDINGS
 ${findings}
 `.trim(),
-      },
-      ...formattedHistory, // Injects previous conversational turns sequentially
-      {
-        role: "user",
-        content: message, // Appends current user query at the absolute end
-      },
-    ],
-  });
+        },
+        ...formattedHistory, 
+        {
+          role: "user",
+          content: message, 
+        },
+      ],
+    });
 
-  return Response.json({
-    reply: completion.choices[0].message.content,
-  });
+    return Response.json({
+      reply: completion.choices[0].message.content || "",
+    });
+  } catch (error) {
+    console.error(error);
+    return Response.json({ reply: "I'm sorry, I didn't quite catch that." }, { status: 500 });
+  }
 }

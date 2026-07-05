@@ -15,11 +15,29 @@ import {
   anxietyLevels,
 } from "../data/generator";
 
-/**
- * =========================
- * PATIENT GENERATOR
- * =========================
- */
+export const patientAvatars = {
+  male: {
+    young: "/avatars/male_young.png",
+    adult: "/avatars/male_adult.png",
+    middle: "/avatars/male_middle.png",
+    senior: "/avatars/male_senior.png",
+  },
+  female: {
+    young: "/avatars/female_young.png",
+    adult: "/avatars/female_adult.png",
+    middle: "/avatars/female_middle.png",
+    senior: "/avatars/female_senior.png",
+  }
+};
+
+export function getPatientAvatar(sex: string, age: number): string {
+  const genderMap = sex === "Male" ? patientAvatars.male : patientAvatars.female;
+  if (age <= 25) return genderMap.young;
+  if (age <= 50) return genderMap.adult;
+  if (age <= 65) return genderMap.middle;
+  return genderMap.senior;
+}
+
 function generatePatient(caseData: Disease) {
   const sex = Math.random() > 0.5 ? "Male" : "Female";
 
@@ -32,24 +50,27 @@ function generatePatient(caseData: Disease) {
     lastNames[Math.floor(Math.random() * lastNames.length)];
 
   const age = Math.floor(Math.random() * 63) + 18;
-
-  const occupation =
-    occupations[Math.floor(Math.random() * occupations.length)];
-
-  const personality =
-    personalities[Math.floor(Math.random() * personalities.length)];
-
-  const pain =
-    painTolerance[Math.floor(Math.random() * painTolerance.length)];
-
-  const anxiety =
-    anxietyLevels[Math.floor(Math.random() * anxietyLevels.length)];
+  const occupation = occupations[Math.floor(Math.random() * occupations.length)];
+  const personality = personalities[Math.floor(Math.random() * personalities.length)];
+  const pain = painTolerance[Math.floor(Math.random() * painTolerance.length)];
+  const anxiety = anxietyLevels[Math.floor(Math.random() * anxietyLevels.length)];
 
   return {
     ...caseData,
-
+    presentation: {
+      ...caseData.presentation,
+      physicalExam: caseData.presentation?.physicalExam ?? {
+        vitals: "Vitals within acceptable operational variance.",
+        heent: "HEENT evaluation clear.",
+        chest: "Lungs clear to auscultation bilaterally.",
+        abdomen: "Abdomen soft, non-distended.",
+        neuro: "Grossly neurologically intact."
+      }
+    },
     patient: {
       name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
       sex,
       age,
       occupation,
@@ -57,7 +78,6 @@ function generatePatient(caseData: Disease) {
       painTolerance: pain,
       anxiety,
     },
-
     aiContext: {
       disease: caseData.name,
       chiefComplaint: caseData.presentation.chiefComplaint,
@@ -73,9 +93,11 @@ function generatePatient(caseData: Disease) {
   };
 }
 
-type GeneratedPatient = Omit<Disease, "patient"> & {
+type GeneratedPatient = Disease & {
   patient: {
     name: string;
+    firstName: string;
+    lastName: string;
     sex: string;
     age: number;
     occupation: string;
@@ -83,7 +105,6 @@ type GeneratedPatient = Omit<Disease, "patient"> & {
     painTolerance: string;
     anxiety: number;
   };
-
   aiContext: {
     disease: string;
     chiefComplaint: string;
@@ -98,11 +119,6 @@ type GeneratedPatient = Omit<Disease, "patient"> & {
   };
 };
 
-/**
- * =========================
- * BULLETPROOF NO-CHOP STREAMING EFFECT
- * =========================
- */
 function StreamingText({ text, speed = 4 }: { text: string; speed?: number }) {
   const [displayedText, setDisplayedText] = useState("");
 
@@ -132,9 +148,6 @@ function StreamingText({ text, speed = 4 }: { text: string; speed?: number }) {
 }
 
 export default function LabsPage() {
-  // -------------------------
-  // STATE LAYER
-  // -------------------------
   const [messages, setMessages] = useState<
     { id: number; role: "user" | "ai"; text: string; isNewAI?: boolean }[]
   >([]);
@@ -148,26 +161,20 @@ export default function LabsPage() {
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
   const [performedExams, setPerformedExams] = useState<Record<string, boolean>>({});
   
-  // INFRASTRUCTURE PROTECTION STATES
   const [isGrading, setIsGrading] = useState(false); 
   const [isResponding, setIsResponding] = useState(false); 
   
-  // TIMER STATES
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerActive, setTimerActive] = useState<boolean>(false);
-  
-  // NEW: LOCKOUT TRACKER STATE
   const [hasStarted, setHasStarted] = useState<boolean>(false);
   
-  // SHIFT LOG TRACKER STATE
-  const [shiftHistory, setShiftHistory] = useState<{
+  const [, setShiftHistory] = useState<{
     id: string;
     patientName: string;
     correctDiagnosis: string;
     finalScore: number;
   }[]>([]);
 
-  // ENGINE 1: INITIALIZE AND LOAD CLOUD BACKUP
   useEffect(() => {
     const savedLogs = localStorage.getItem("medsim_shift_logs");
     if (savedLogs) {
@@ -179,14 +186,12 @@ export default function LabsPage() {
   const activeCaseRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Keep chat pinned smoothly
   useEffect(() => {
     if (messages.length > 0 && chatContainerRef.current) {
       chatContainerRef.current.scrollTop = 0;
     }
   }, [messages.length]);
 
-  // OSCE TIMER COUNTDOWN ENGINE
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -202,20 +207,15 @@ export default function LabsPage() {
     return () => clearInterval(interval);
   }, [timerActive, timeLeft]);
 
-  // Format seconds into professional MM:SS display
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60; // This extracts the 0-59 remainder
+  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+};
 
-  // -------------------------
-  // GAME ACTION SYSTEMS
-  // -------------------------
+
   function admitPatient() {
-    const randomDisease =
-      diseaseLibrary[Math.floor(Math.random() * diseaseLibrary.length)];
-
+    const randomDisease = diseaseLibrary[Math.floor(Math.random() * diseaseLibrary.length)];
     const generatedPatient = generatePatient(randomDisease);
 
     setMessages([]);
@@ -230,69 +230,65 @@ export default function LabsPage() {
     setIsResponding(false);
     setIsGrading(false);
     
-    // Set up 5 mins, but do not auto-start countdown or unlock inputs yet
     setTimeLeft(300); 
     setTimerActive(false);
     setHasStarted(false);
   }
 
   async function askQuestion() {
-    if (!patient || !question.trim() || isResponding || isGrading || !hasStarted) return;
-    
-    const currentQuestion = question.trim();
-    setQuestion(""); 
-    setIsResponding(true);
-    setQuestionHistory((prev) => [...prev, currentQuestion]);
+  if (!patient || !question.trim() || isResponding || isGrading || !hasStarted) return;
+  
+  const currentQuestion = question.trim();
+  setQuestion(""); 
+  setIsResponding(true);
+  setQuestionHistory((prev) => [...prev, currentQuestion]);
+
+  const newUserMessage = {
+    id: Date.now(),
+    role: "user" as const,
+    text: currentQuestion,
+  };
+
+  // Synchronously compute the exact history payload to avoid React batching delays
+  const updatedHistoryForAPI = [newUserMessage, ...messages];
+
+  setMessages((prev) => [newUserMessage, ...prev]);
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: currentQuestion,
+        context: patient.aiContext,
+        history: updatedHistoryForAPI // Sending the clean, predictable array
+      }),
+    });
+
+    const data = await res.json();
 
     setMessages((prev) => [
       {
-        id: Date.now(),
-        role: "user",
-        text: currentQuestion,
+        id: Date.now() + 1,
+        role: "ai",
+        text: data.reply || "...",
+        isNewAI: true,
       },
       ...prev,
     ]);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: currentQuestion,
-          context: patient.aiContext,
-          history: messages 
-        }),
-      });
-
-      const data = await res.json();
-
-      setMessages((prev) => [
-        {
-          id: Date.now() + 1,
-          role: "ai",
-          text: data.reply || "",
-          isNewAI: true,
-        },
-        ...prev,
-      ]);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsResponding(false); 
-    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setIsResponding(false); 
   }
+}
 
-  // -------------------------
-  // OBJECTIVE EXAM ENGINE
-  // -------------------------
+
   function runPhysicalExam(type: "vitals" | "heent" | "chest" | "abdomen" | "neuro") {
     if (score !== null || isGrading || !hasStarted) return;
     setPerformedExams((prev) => ({ ...prev, [type]: true }));
   }
 
-  // -------------------------
-  // DIAGNOSIS EVALUATION SYSTEM
-  // -------------------------
   async function submitDiagnosis() {
     setTimerActive(false);
 
@@ -313,10 +309,7 @@ export default function LabsPage() {
         : `Incorrect. Correct answer was: ${patient.hidden.diagnosis}`
     );
 
-    const userQuestionsOnly = questionHistory
-      .map(q => `- ${q}`)
-      .join("\n");
-    
+    const userQuestionsOnly = questionHistory.map(q => `- ${q}`).join("\n");
     const checkedExams = Object.keys(performedExams).join(", ") || "None";
     const summaryBlock = `Questions Asked:\n${userQuestionsOnly}\n\nExams Performed: ${checkedExams}`;
 
@@ -370,25 +363,56 @@ export default function LabsPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-[#0b0f17] to-[#0f172a]">
-      
-      <div 
-        ref={activeCaseRef} 
-        className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 rounded-2xl bg-[#111827] border border-white/10 shadow-2xl p-6"
-      >
+      <div ref={activeCaseRef} className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 rounded-2xl bg-[#111827] border border-white/10 shadow-2xl p-6">
         
-        {/* LEFT COLUMN: HISTORY INTERVIEW PANEL */}
         <div className="space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-semibold text-white">
-                Patient Admission
-              </h1>
+              <h1 className="text-xl font-semibold text-white">Patient Admission</h1>
               <Link href="/dashboard" className="text-xs text-gray-400 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/5 transition-all">
                 📊 Exit to Dashboard
               </Link>
             </div>
 
-            {/* OSCE TIMER DISPLAY WITH INTERACTIVE START TRIGGER */}
+            <div className="p-5 rounded-2xl bg-[#0f1626]/40 border border-white/5 backdrop-blur-md shadow-xl flex items-center gap-4 group hover:border-white/10 transition-colors duration-300 mb-4">
+              <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center overflow-hidden shrink-0">
+                <img 
+                  src={getPatientAvatar(patient.patient.sex, patient.patient.age)} 
+                  alt="Patient Avatar" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none" />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest mb-0.5">
+                  Active Clinical Case // Intake Track
+                </p>
+                <h2 className="text-lg font-black text-white truncate leading-tight">
+                  {patient.patient.firstName} {patient.patient.lastName}
+                </h2>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-400 font-medium">
+                  <span>Age: <strong className="text-gray-200">{patient.patient.age}</strong></span>
+                  <span className="h-1 w-1 rounded-full bg-white/20" />
+                  <span>Sex: <strong className="text-gray-200">{patient.patient.sex}</strong></span>
+                  <span className="h-1 w-1 rounded-full bg-white/20" />
+                  <span className="truncate">Occupation: <strong className="text-indigo-300">{patient.patient.occupation}</strong></span>
+                </div>
+              </div>
+
+              <div className="hidden sm:flex flex-col items-end gap-1.5 shrink-0 font-mono text-[10px]">
+                <span className="px-2 py-0.5 rounded bg-amber-500/5 text-amber-400 border border-amber-500/10 font-bold uppercase tracking-wider">
+                  {patient.patient.personality}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-red-500/5 text-red-400 border border-red-500/10 font-bold uppercase tracking-wider">
+                  Pain: {patient.patient.painTolerance}
+                </span>
+              </div>
+            </div>
+
             {timeLeft !== null && (
               <div className={`p-4 rounded-xl border flex items-center justify-between shadow-lg transition-all duration-500 mb-6 backdrop-blur-md ${
                 !hasStarted 
@@ -406,11 +430,8 @@ export default function LabsPage() {
                       hasStarted && timeLeft <= 60 ? "bg-red-500" : hasStarted ? "bg-indigo-500" : "bg-gray-500"
                     }`}></span>
                   </span>
-                  
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none mb-0.5">
-                      OSCE Examination
-                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none mb-0.5">OSCE Examination</span>
                     <span className="text-xs font-medium tracking-wide text-gray-300">
                       {!hasStarted ? "Awaiting Consultation Init" : "Active Evaluation Station"}
                     </span>
@@ -423,15 +444,13 @@ export default function LabsPage() {
                       setTimerActive(true);
                       setHasStarted(true);
                     }}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all shadow-md shadow-indigo-600/10 border border-indigo-400/20"
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all shadow-md"
                   >
                     ▶ Start Timer
                   </button>
                 ) : (
-                  <div className={`text-2xl font-mono font-black tracking-widest px-3 py-1 rounded-lg bg-black/40 border transition-colors duration-500 ${
-                    timeLeft <= 60 
-                      ? "text-red-500 border-red-500/20" 
-                      : "text-indigo-400 border-white/5"
+                  <div className={`text-2xl font-mono font-black tracking-widest px-3 py-1 rounded-lg bg-black/40 border ${
+                    timeLeft <= 60 ? "text-red-500 border-red-500/20" : "text-indigo-400 border-white/5"
                   }`}>
                     {formatTime(timeLeft)}
                   </div>
@@ -439,201 +458,131 @@ export default function LabsPage() {
               </div>
             )}
 
-            <div className="space-y-1 text-sm text-gray-300 bg-black/20 p-4 rounded-xl border border-white/5">
-              <p><span className="text-gray-400">Name:</span> {patient.patient.name}</p>
-              <p><span className="text-gray-400">Age:</span> {patient.patient.age}</p>
-              <p><span className="text-gray-400">Sex:</span> {patient.patient.sex}</p>
-              <p><span className="text-gray-400">Occupation:</span> {patient.patient.occupation}</p>
-              <p><span className="text-gray-400">Personality:</span> {patient.patient.personality}</p>
-            </div>
-
             <div className="mt-4 p-4 rounded-xl bg-black/30 border border-white/10">
-              <p className="text-xs text-gray-400 uppercase mb-2">
-                Presenting Complaint
-              </p>
-              <p className="text-sm text-gray-100">
-                {patient.presentation.chiefComplaint}
-              </p>
+              <p className="text-xs text-gray-400 uppercase mb-2">Presenting Complaint</p>
+              <p className="text-sm text-gray-100">{patient.presentation?.chiefComplaint ?? "No data available."}</p>
             </div>
 
-            {/* DYNAMIC SCROLL EXPANDING FIELD CONTROLLER */}
-<div className="space-y-3 mt-4">
-  <textarea
-    value={question}
-    onChange={(e) => {
-      setQuestion(e.target.value);
-      // Dynamically reset height then scale up based on text contents
-      e.target.style.height = "auto";
-      e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`; // 160px is the cap height limit
-    }}
-    disabled={!hasStarted || isResponding || isGrading || isSessionEnded}
-    placeholder={!hasStarted ? "Start consultation timer above to write..." : isSessionEnded ? "Case finalized." : "Ask a clinical question..."}
-    rows={1}
-    className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed resize-none min-h-[44px] max-h-[160px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10"
-    onKeyDown={(e) => {
-      // Allows user to press enter to submit immediately without dropping lines, unless they click Shift + Enter
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault(); 
-        if (question.trim() && !isResponding && !isGrading && !isSessionEnded && hasStarted) {
-          askQuestion();
-          // Reset target frame heights perfectly back to baseline defaults upon submission
-          const target = e.target as HTMLTextAreaElement;
-          target.style.height = "auto";
-        }
-      }
-    }}
-  />
+            <div className="space-y-3 mt-4">
+              <textarea
+                value={question}
+                onChange={(e) => {
+                  setQuestion(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
+                }}
+                disabled={!hasStarted || isResponding || isGrading || isSessionEnded}
+                placeholder={!hasStarted ? "Start consultation timer..." : isSessionEnded ? "Case finalized." : "Ask a clinical question..."}
+                rows={1}
+                className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm disabled:opacity-50 resize-none min-h-[44px] max-h-[160px] overflow-y-auto"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault(); 
+                    if (question.trim() && !isResponding && !isGrading && !isSessionEnded && hasStarted) {
+                      askQuestion();
+                      (e.target as HTMLTextAreaElement).style.height = "auto";
+                    }
+                  }
+                }}
+              />
+              <button
+                onClick={() => {
+                  askQuestion();
+                  const txt = document.querySelector("textarea");
+                  if (txt) txt.style.height = "auto";
+                }}
+                disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-950 p-3 rounded-xl text-white font-medium text-sm transition-colors"
+              >
+                Ask Question
+              </button>
+            </div>
 
-  <button
-    onClick={() => {
-      askQuestion();
-      // Safely check and revert textarea dimensions manually on mouse click submission
-      const textElement = document.querySelector("textarea");
-      if (textElement) textElement.style.height = "auto";
-    }}
-    disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
-    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-950 disabled:text-gray-500 disabled:cursor-not-allowed p-3 rounded-xl text-white font-medium text-sm transition-colors"
-  >
-    Ask Question
-  </button>
-</div>
-
-
-            <div 
-              ref={chatContainerRef}
-              className="mt-4 space-y-3 max-h-48 overflow-y-auto pr-1 border-t border-white/5 pt-3 transition-all duration-300"
-            >
+            <div ref={chatContainerRef} className="mt-4 space-y-3 max-h-48 overflow-y-auto border-t border-white/5 pt-3">
               {isResponding && (
-                <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-400 text-xs font-medium flex items-center justify-between shadow-inner animate-pulse">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                    </span>
-                    <span>Patient processing inquiry...</span>
-                  </div>
-                  <span className="text-[10px] uppercase bg-indigo-900/50 px-2 py-0.5 rounded border border-indigo-500/20 tracking-wider">Analyzing</span>
+                <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-400 text-xs font-medium flex items-center justify-between animate-pulse">
+                  <span>Patient processing inquiry...</span>
                 </div>
               )}
 
               {messages.map((m, idx) => (
-                <div
-                  key={m.id}
-                  className={`p-3 rounded-xl border border-white/5 transition-all duration-300 ${
-                    m.role === "user" 
-                      ? "bg-indigo-950/20 border-indigo-500/10 ml-6" 
-                      : "bg-black/40 mr-6"
-                  }`}
-                >
+                <div key={m.id} className={`p-3 rounded-xl border border-white/5 ${m.role === "user" ? "bg-indigo-950/20 border-indigo-500/10 ml-6" : "bg-black/40 mr-6"}`}>
                   <p className={`text-xs mb-1 font-semibold ${m.role === "user" ? "text-indigo-400" : "text-emerald-400"}`}>
                     {m.role === "user" ? "You" : "Patient"}
                   </p>
-                  
-                  {m.role === "ai" && m.isNewAI && idx === 0 ? (
-                    <StreamingText text={m.text} />
-                  ) : (
-                    <p className="text-gray-200 text-sm leading-relaxed">{m.text}</p>
-                  )}
+                  {m.role === "ai" && m.isNewAI && idx === 0 ? <StreamingText text={m.text} /> : <p className="text-gray-200 text-sm">{m.text}</p>}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: PHYSICAL ASSESSMENT PANEL */}
         <div className="space-y-4 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Objective Assessment</h2>
-            <p className="text-xs text-gray-400 mb-2">Perform components of the physical exam:</p>
-            
             <div className="grid grid-cols-2 gap-2 mb-4">
               {(["vitals", "heent", "chest", "abdomen", "neuro"] as const).map((examType) => (
                 <button 
                   key={examType} 
                   onClick={() => runPhysicalExam(examType)}
                   disabled={!hasStarted || isGrading || isSessionEnded}
-                  className={`p-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-                    performedExams[examType] 
-                      ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-400" 
-                      : "bg-black/20 border-white/10 text-gray-300 hover:bg-black/40"
+                  className={`p-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border transition-all ${
+                    performedExams[examType] ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-400" : "bg-black/20 border-white/5 text-gray-400"
                   }`}
                 >
-                  {examType} {performedExams[examType] ? "✓" : ""}
+                  {examType}
                 </button>
               ))}
             </div>
 
-            <div className="bg-black/40 border border-white/5 rounded-xl p-4 space-y-2.5 h-44 overflow-y-auto text-sm">
-              <p className="text-gray-400 font-bold uppercase tracking-wider text-xs">Exam Reports</p>
-              {Object.keys(performedExams).length === 0 && (
-                <p className="text-gray-500 italic text-xs pt-1">No examinations performed yet.</p>
-              )}
-              {Object.keys(performedExams).map((key) => (
-                <div key={key} className="border-b border-white/5 pb-2 last:border-0 text-xs">
-                  <span className="text-indigo-400 font-bold uppercase mr-1.5">{key}:</span>
-                  <span className="text-gray-300">{(patient.hidden.examination as any)[key]}</span>
-                </div>
-              ))}
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+              {Object.keys(performedExams).map((type) => {
+                const examKey = type as keyof Required<Required<Disease>["presentation"]>["physicalExam"];
+                return (
+                  <div key={type} className="p-3 rounded-xl bg-black/40 border border-white/5">
+                    <p className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest mb-1">{type} Report</p>
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      {patient.presentation?.physicalExam?.[examKey] || "No anomalies detected."}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* DIAGNOSIS SUBMISSION & GRADING SYSTEM */}
-          <div className="space-y-3">
+          <div className="border-t border-white/5 pt-4 space-y-3">
             <input
+              type="text"
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
               disabled={!hasStarted || isGrading || isSessionEnded}
-              placeholder={!hasStarted ? "Locked until timer runs..." : isSessionEnded ? "Evaluation complete" : "Enter diagnosis..."}
-              className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm disabled:opacity-50"
+              placeholder="Type final diagnosis..."
+              className="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white text-sm"
             />
-
             <button
-              disabled={!hasStarted || !diagnosis.trim() || isGrading || isSessionEnded}
               onClick={submitDiagnosis}
-              className="w-full bg-green-600 hover:bg-green-500 disabled:bg-green-950 disabled:text-gray-600 disabled:cursor-not-allowed p-3 rounded-xl text-white font-medium text-sm transition-colors"
+              disabled={!hasStarted || !diagnosis.trim() || isGrading || isSessionEnded}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 p-3.5 rounded-xl text-white font-bold text-xs uppercase tracking-widest"
             >
-              Submit Diagnosis
+              {isGrading ? "Compiling Matrix..." : "Finalize & Submit Diagnosis"}
             </button>
 
-            {isGrading && (
-              <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-400 text-xs space-y-2 animate-pulse shadow-md">
-                <p className="font-semibold">Cross-referencing Diagnostic Findings...</p>
-              </div>
-            )}
-
-            {result && !isGrading && (
-              <div className="p-4 rounded-xl bg-black/40 text-gray-200 text-xs border border-white/5 space-y-2">
-                <p className="font-semibold text-emerald-400">{result}</p>
-                {feedback && <p className="text-gray-400 border-t border-white/5 pt-1.5 italic">"{feedback}"</p>}
-              </div>
-            )}
-
-            {score !== null && !isGrading && (
-              <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex justify-between items-center">
-                <p className="text-xs text-gray-400 uppercase font-medium">
-                  Performance Score
-                </p>
-                <p className="text-2xl font-bold text-white">
-                  {score}/100
-                </p>
-              </div>
-            )}
-
             {isSessionEnded && (
-              <button 
-                onClick={admitPatient} 
-                className="w-full bg-indigo-600 hover:bg-indigo-500 p-2.5 rounded-xl text-white text-xs font-bold uppercase tracking-wider transition-colors"
-              >
-                Admit Next Patient
-              </button>
+              <div className="p-4 rounded-xl bg-[#0f172a] border border-white/10 space-y-3">
+                <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                  <h3 className="text-sm font-bold text-white">OSCE Score Matrix</h3>
+                  <span className="text-base font-mono font-black text-emerald-400">{score}/100</span>
+                </div>
+                <p className="text-xs text-red-400 font-mono">{result}</p>
+                <div className="text-xs text-gray-400 whitespace-pre-line max-h-32 overflow-y-auto bg-black/20 p-2.5 rounded">{feedback}</div>
+                <button onClick={admitPatient} className="w-full bg-white/5 hover:bg-white/10 text-white font-semibold text-xs py-2 rounded-lg">
+                  Admit Next Case &rarr;
+                </button>
+              </div>
             )}
-
-            <Link href="/dashboard" className="w-full bg-white/5 hover:bg-white/10 p-2.5 rounded-xl text-gray-400 text-xs transition-colors block text-center border border-white/5">
-              Back to Dashboard Overview
-            </Link>
           </div>
-
         </div>
+
       </div>
     </main>
   );

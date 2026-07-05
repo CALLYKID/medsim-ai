@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import OpenAI from "openai";
 
-const apiKey = process.env.GROQ_API_KEY;
-
-const groq = new Groq({
-  apiKey: apiKey || "",
+const openRouter = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY || "",
 });
 
-console.log("Score endpoint called via Groq", Date.now());
-
 export async function POST(req: Request) {
-  if (!apiKey) {
-    console.error("CRITICAL ERROR: GROQ_API_KEY environment variable is missing.");
+  if (!process.env.OPENROUTER_API_KEY) {
     return NextResponse.json({
       historyScore: 20,
-      feedback: "System calibration error: Medical grading engine credentials are unconfigured on live host."
+      feedback: "System calibration error: OpenRouter credentials unconfigured on live host."
     });
   }
 
@@ -47,10 +43,10 @@ You must respond with a strictly valid JSON object matching this exact format:
 }
 `.trim();
 
-    const completion = await groq.chat.completions.create({
-      model: "GPT OSS 120B",
-      temperature: 0.1, // Low temperature enforces strict rule adherence
-      response_format: { type: "json_object" }, // Guarantees structural JSON compilation
+    const completion = await openRouter.chat.completions.create({
+      model: "openai/gpt-oss-120b:free",
+      temperature: 0.1,
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
@@ -64,19 +60,10 @@ You must respond with a strictly valid JSON object matching this exact format:
     });
 
     const rawText = completion.choices[0].message.content ? completion.choices[0].message.content.trim() : "{}";
-    const data = JSON.parse(rawText);
-    
-    return NextResponse.json(data);
+    return NextResponse.json(JSON.parse(rawText));
   } catch (error) {
-    console.error("Groq Grading Error:");
-    console.error(error);
-
-    if (error instanceof Error) {
-      console.error(error.message);
-      console.error(error.stack);
-    }
     return NextResponse.json(
-      { historyScore: 20, feedback: "Unable to process clinical history grading via Groq engine." },
+      { historyScore: 20, feedback: "Unable to process clinical history grading via evaluation engine." },
       { status: 500 }
     );
   }
