@@ -264,31 +264,36 @@ export default function LabsPage() {
 
   setMessages((prev) => [newUserMessage, ...prev]);
 
-  try {
+    try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: currentQuestion,
         context: patient.aiContext,
-        history: updatedHistoryForAPI // Sending the clean, predictable array
+        history: updatedHistoryForAPI
       }),
     });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    setMessages((prev) => [
-      {
-        id: Date.now() + 1,
-        role: "ai",
-        text: data.reply || "...",
-        isNewAI: true,
-      },
-      ...prev,
-    ]);
+    // Only inject into the message history if we have a successful, valid reply string
+    if (res.ok && data && data.reply) {
+      setMessages((prev) => [
+        {
+          id: Date.now() + 1,
+          role: "ai",
+          text: data.reply,
+          isNewAI: true,
+        },
+        ...prev,
+      ]);
+    }
+
   } catch (err) {
     console.error(err);
   } finally {
+
     setIsResponding(false); 
   }
 }
