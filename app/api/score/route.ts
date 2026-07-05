@@ -18,8 +18,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { investigationSummary, chiefComplaint, correctDiagnosis, finalDiagnosis } = body;
 
-    const prompt = `
-You are an expert medical school objective clinical examiner grading a student's history-taking performance.
+    const prompt = `You are an expert medical school objective clinical examiner grading a student's history-taking performance.
 
 CASE PROFILE:
 - Patient Chief Complaint: "${chiefComplaint}"
@@ -40,13 +39,12 @@ You must respond with a strictly valid JSON object matching this exact format:
 {
   "historyScore": <integer between 0 and 40>,
   "feedback": "<concise 2-sentence feedback string>"
-}
-`.trim();
+}`;
 
     const completion = await openRouter.chat.completions.create({
-      model: "openai/gpt-oss-120b:free",
+      model: "google/gemini-2.5-flash",
       temperature: 0.1,
-      response_format: { type: "json_object" },
+      max_tokens: 400, // Explicitly limits requested context tokens to prevent credit limit errors
       messages: [
         {
           role: "system",
@@ -59,9 +57,27 @@ You must respond with a strictly valid JSON object matching this exact format:
       ],
     });
 
-    const rawText = completion.choices[0].message.content ? completion.choices[0].message.content.trim() : "{}";
-    return NextResponse.json(JSON.parse(rawText));
+    let rawText = completion.choices[0].message.content ? completion.choices[0].message.content.trim() : "{}";
+
+    // Clean out any accidental markdown wrapper syntax (```json ... ```) safely
+    if (rawText.startsWith("```")) {
+      const firstLineBreak = rawText.indexOf("\n");
+      if (firstLineBreak !== -1) {
+        rawText = rawText.substring(firstLineBreak + 1);
+      } else {
+        rawText = rawText.replace(/```/g, "");
+      }
+      
+      if (rawText.endsWith("```")) {
+        rawText = rawText.substring(0, rawText.length - 3);
+      }
+      rawText = rawText.trim();
+    }
+
+    const data = JSON.parse(rawText);
+    return NextResponse.json(data);
   } catch (error) {
+    console.error("Grading route error:", error);
     return NextResponse.json(
       { historyScore: 20, feedback: "Unable to process clinical history grading via evaluation engine." },
       { status: 500 }
