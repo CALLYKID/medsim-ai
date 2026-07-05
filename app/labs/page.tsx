@@ -547,7 +547,7 @@ export default function LabsPage() {
 
             <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
               {Object.keys(performedExams).map((type) => {
-                const examKey = type as keyof Required<Required<Disease>["presentation"]>["physicalExam"];
+                const examKey = type as keyof Required<GeneratedPatient["presentation"]>["physicalExam"];
                 return (
                   <div key={type} className="p-3 rounded-xl bg-black/40 border border-white/5">
                     <p className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest mb-1">{type} Report</p>
