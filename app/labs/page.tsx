@@ -346,28 +346,32 @@ export default function LabsPage() {
       setScore(totalScore);
       setFeedback(data.feedback ?? "Evaluation compiled.");
 
-      const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
+            const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
       const updated = [{
         id: Date.now().toString(),
         patientName: patient.patient.name,
         correctDiagnosis: patient.hidden.diagnosis,
-        finalScore: totalScore
+        finalScore: totalScore,
+        timestamp: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }) + " • " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }, ...currentLogs];
       localStorage.setItem("medsim_shift_logs", JSON.stringify(updated));
+
 
     } catch (e) {
       const fallbackScore = diagnosisScore + examScore + 15;
       setScore(fallbackScore);
       setFeedback("Scoring evaluation completed with internal fallback logic values.");
 
-      const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
+            const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
       const updated = [{
         id: Date.now().toString(),
         patientName: patient.patient.name,
         correctDiagnosis: patient.hidden.diagnosis,
-        finalScore: fallbackScore
+        finalScore: fallbackScore,
+        timestamp: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }) + " • " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }, ...currentLogs];
       localStorage.setItem("medsim_shift_logs", JSON.stringify(updated));
+
     } finally {
       setIsGrading(false);
     }
