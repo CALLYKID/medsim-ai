@@ -1,6 +1,6 @@
 export const maleFirstNames = [
   "James", "Oliver", "Jack", "Harry", "George", "Noah",
-  "Charlie", "Leo", "Oscar", "Arthur", "Muhammad",
+  "Charlie", "Leo", "Oscar", "Arthur", "Mohammed",
   "Theo", "Henry", "Freddie", "Lucas"
 ];
 
