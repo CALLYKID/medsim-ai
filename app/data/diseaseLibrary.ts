@@ -6,7 +6,7 @@ export type Disease = {
   chiefComplaint:string;
  };
 
- patientProfile:{
+ patientProfile?:{
   ageRange:[number,number];
   gender:"Male"|"Female";
   occupation:string;
