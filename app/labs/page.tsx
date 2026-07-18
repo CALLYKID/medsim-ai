@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import type { GeneratedPatient } from "../data/patientGenerator";
+import type { Patient } from "../data/patientGenerator";
 import { generatePatient } from "../data/patientGenerator";
 import { buildPatientPrompt } from "../data/patientPromptBuilder";
 import { diseaseLibrary } from "../data/diseaseLibrary";
@@ -63,7 +63,7 @@ export default function LabsPage() {
     { id: number; role: "user" | "ai"; text: string; isNewAI?: boolean }[]
   >([]);
 
-  const [patient, setPatient] = useState<GeneratedPatient | null>(null);
+  const [patient, setPatient] = useState<Patient | null>(null);
   const [currentPatientPrompt, setCurrentPatientPrompt] = useState("");
   const [question, setQuestion] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
@@ -429,7 +429,7 @@ export default function LabsPage() {
                     : "bg-slate-900/60 border-slate-800/80 mr-8"
                 }`}>
                   <p className={`text-[9px] font-mono font-bold tracking-wider uppercase mb-1 ${m.role === "user" ? "text-indigo-400" : "text-emerald-400"}`}>
-                    {m.role === "user" ? "Primary Practitioner" : "Patient Status"}
+                    {m.role === "user" ? "Primary Practitioner" : "Patient Response"}
                   </p>
                   {m.role === "ai" && m.isNewAI && idx === 0 
                     ? <StreamingText text={m.text} /> 
@@ -488,7 +488,7 @@ export default function LabsPage() {
                   </div>
                 ) : (
                   Object.keys(performedExams).map((type) => {
-                    const examKey = type as keyof Required<GeneratedPatient["presentation"]>["physicalExam"];
+                    const examKey = type as keyof Required<Patient["disease"]["hidden"]>["examination"];
                     return (
                       <div key={type} className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-inner hover:border-emerald-500/20 transition-colors">
                         <div className="flex items-center justify-between mb-1 border-b border-slate-800/40 pb-1">
