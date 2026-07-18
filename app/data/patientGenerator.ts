@@ -40,17 +40,18 @@ function generateAge(disease:Disease):number{
   return Math.floor(Math.random()*70)+18;
 }
 
-function generateGender(disease:Disease):"Male"|"Female"{
-  if(disease.patientProfile?.commonGender==="Male"){
+function generateGender(disease: Disease): "Male" | "Female" {
+  if (disease.patientProfile?.gender === "Male") {
     return "Male";
   }
 
-  if(disease.patientProfile?.commonGender==="Female"){
+  if (disease.patientProfile?.gender === "Female") {
     return "Female";
   }
 
-  return Math.random()>0.5 ? "Male" : "Female";
+  return Math.random() > 0.5 ? "Male" : "Female";
 }
+
 
 function generateName(gender:"Male"|"Female"){
   const firstName =
