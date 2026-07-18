@@ -1,24 +1,36 @@
 export type Disease = {
-  id: number;
-  name: string;
-  presentation: {
-    chiefComplaint: string;
+ id:number;
+ name:string;
+
+ presentation:{
+  chiefComplaint:string;
+ };
+
+ patientProfile:{
+  ageRange:[number,number];
+  gender:"Male"|"Female";
+  occupation:string;
+  personality:string;
+  painTolerance:string;
+};
+
+ hidden:{
+  diagnosis:string;
+
+  history:{
+ question:string;
+ answer:string;
+ importance:"high"|"medium"|"low";
+}[];
+
+  examination:{
+   vitals:string;
+   heent:string;
+   chest:string;
+   abdomen:string;
+   neuro:string;
   };
-  hidden: {
-    diagnosis: string;
-    findings: {
-      question: string;
-      answer: string;
-    }[];
-    // This tells TypeScript every case MUST have this data
-    examination: {
-      vitals: string;
-      heent: string;
-      chest: string;
-      abdomen: string;
-      neuro: string;
-    };
-  };
+ };
 };
 
 export const diseaseLibrary: Disease[] = [

@@ -44,7 +44,7 @@ You must respond with a strictly valid JSON object matching this exact format:
     const completion = await openRouter.chat.completions.create({
       model: "google/gemini-2.5-flash",
       temperature: 0.1,
-      max_tokens: 400, // Explicitly limits requested context tokens to prevent credit limit errors
+      max_tokens: 256,
       messages: [
         {
           role: "system",
