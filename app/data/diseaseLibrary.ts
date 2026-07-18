@@ -1,37 +1,38 @@
 export type Disease = {
- id:number;
- name:string;
+ id: number;
+ name: string;
 
- presentation:{
-  chiefComplaint:string;
+ presentation: {
+  chiefComplaint: string;
  };
 
- patientProfile?:{
-  ageRange:[number,number];
-  gender:"Male"|"Female";
-  occupation:string;
-  personality:string;
-  painTolerance:string;
-};
+ patientProfile?: {
+  ageRange: [number, number];
+  gender: "Male" | "Female";
+  occupation: string;
+  personality: string;
+  painTolerance: string;
+ };
 
- hidden:{
-  diagnosis:string;
+ hidden: {
+  diagnosis: string;
 
-  findings:{
- question:string;
- answer:string;
- importance:"high"|"medium"|"low";
-}[];
+  findings: {
+   question: string;
+   answer: string;
+   importance?: "high" | "medium" | "low"; // <-- Added '?' to make it optional
+  }[];
 
-  examination:{
-   vitals:string;
-   heent:string;
-   chest:string;
-   abdomen:string;
-   neuro:string;
+  examination: {
+   vitals: string;
+   heent: string;
+   chest: string;
+   abdomen: string;
+   neuro: string;
   };
  };
 };
+
 
 export const diseaseLibrary: Disease[] = [
   {
