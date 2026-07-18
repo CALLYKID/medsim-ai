@@ -17,7 +17,7 @@ export type Disease = {
  hidden:{
   diagnosis:string;
 
-  history:{
+  findings:{
  question:string;
  answer:string;
  importance:"high"|"medium"|"low";
