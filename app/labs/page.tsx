@@ -200,7 +200,7 @@ export default function LabsPage() {
     setPerformedExams((prev) => ({ ...prev, [type]: true }));
   }
 
-  async function submitDiagnosis() {
+    async function submitDiagnosis() {
     setTimerActive(false);
     if (!patient || !diagnosis.trim() || isGrading || !hasStarted) return;
     setIsGrading(true);
@@ -224,7 +224,7 @@ export default function LabsPage() {
       differentialScore = 20; // On the secondary spectrum
     } else {
       const activeDiffsCount = [diff1, diff2, diff3].filter(d => d.trim().length > 0).length;
-      differentialScore = activeDiffsCount * 5; // Basic process points for thinking of alternatives
+      differentialScore = activeDiffsCount * 5; // Basic process points
     }
 
     // 3. Physical Exam Metric (20 pts)
@@ -243,28 +243,31 @@ export default function LabsPage() {
 
     try {
       const res = await fetch("/api/score", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    investigationSummary: summaryBlock,
-    chiefComplaint: patient.disease.presentation.chiefComplaint,
-    correctDiagnosis: patient.disease.hidden.diagnosis,
-    finalDiagnosis: diagnosis,
-    differentials: [diff1, diff2, diff3],
-    performedExamsCount: Object.keys(performedExams).length,
-    personality: patient.personality,
-    painTolerance: patient.painTolerance
-  }),
-});
-
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          investigationSummary: summaryBlock,
+          chiefComplaint: patient.disease.presentation.chiefComplaint,
+          correctDiagnosis: patient.disease.hidden.diagnosis,
+          finalDiagnosis: diagnosis,
+          differentials: [diff1, diff2, diff3],
+          performedExamsCount: Object.keys(performedExams).length,
+          personality: patient.personality,
+          painTolerance: patient.painTolerance
+        }),
+      });
 
       const data = await res.json();
       
-      // 4. History Chat Metric from LLM Evaluation (40 pts max)
-      const rawHistory = data.historyScore ?? 25; 
-      const historyScore = Math.max(0, Math.min(40, Math.round((rawHistory / 40) * 40)));
-    const empathyScore = Math.max(0, Math.min(100, data.empathyScore ?? 7));
-      const totalScore = Math.max(0, Math.min(100, accuracyScore + differentialScore + examScore + historyScore));
+      // 4. History Chat Metric from LLM Evaluation (30 pts max now)
+      const rawHistory = data.historyScore ?? 20; 
+      const historyScore = Math.max(0, Math.min(30, rawHistory));
+      
+      // 5. Empathy Score from LLM Evaluation (10 pts max)
+      const empathyScore = Math.max(0, Math.min(10, data.empathyScore ?? 7));
+      
+      // Combine all 5 elements to reach exactly 100 max
+      const totalScore = Math.max(0, Math.min(100, accuracyScore + differentialScore + examScore + historyScore + empathyScore));
       
       setScore(totalScore);
       setScoreBreakdown({
@@ -288,14 +291,16 @@ export default function LabsPage() {
 
     } catch (e) {
       // Fallback Engine Breakdown Calculation
-      const historyFallback = 25;
-      const totalScore = accuracyScore + differentialScore + examScore + historyFallback;
+      const historyFallback = 20;
+      const empathyFallback = 7;
+      const totalScore = accuracyScore + differentialScore + examScore + historyFallback + empathyFallback;
       
       setScore(totalScore);
       setScoreBreakdown({
         history: historyFallback,
         exam: examScore,
         differential: differentialScore,
+        empathy: empathyFallback, // Fixed fallback configuration mapping
         accuracy: accuracyScore
       });
       setFeedback("Scoring evaluation completed with internal fallback logic values.");
