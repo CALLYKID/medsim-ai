@@ -66,9 +66,22 @@ export default function LabsPage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [currentPatientPrompt, setCurrentPatientPrompt] = useState("");
   const [question, setQuestion] = useState("");
+  
+  // Differential Inputs
+  const [diff1, setDiff1] = useState("");
+  const [diff2, setDiff2] = useState("");
+  const [diff3, setDiff3] = useState("");
+  
   const [diagnosis, setDiagnosis] = useState("");
   const [result, setResult] = useState("");
   const [score, setScore] = useState<number | null>(null);
+  const [scoreBreakdown, setScoreBreakdown] = useState<{
+    history: number;
+    exam: number;
+    differential: number;
+    accuracy: number;
+  } | null>(null);
+  
   const [feedback, setFeedback] = useState(""); 
   const [performedExams, setPerformedExams] = useState<Record<string, boolean>>({});
   
@@ -119,9 +132,13 @@ export default function LabsPage() {
     setMessages([]);
     setPatient(generatedPatient);
     setQuestion("");
+    setDiff1("");
+    setDiff2("");
+    setDiff3("");
     setDiagnosis("");
     setResult("");
     setScore(null);
+    setScoreBreakdown(null);
     setFeedback("");
     setPerformedExams({});
     setIsResponding(false);
@@ -182,73 +199,109 @@ export default function LabsPage() {
     setPerformedExams((prev) => ({ ...prev, [type]: true }));
   }
 
-    async function submitDiagnosis() {
+  async function submitDiagnosis() {
     setTimerActive(false);
     if (!patient || !diagnosis.trim() || isGrading || !hasStarted) return;
     setIsGrading(true);
 
     const correct = patient.disease.hidden.diagnosis.toLowerCase().trim();
-    const user = diagnosis.toLowerCase().trim();
-    const isCorrect = user.includes(correct);
+    const finalUserDiag = diagnosis.toLowerCase().trim();
+    
+    // 1. Accuracy Metric (10 pts)
+    const isPrimaryCorrect = finalUserDiag.includes(correct);
+    const accuracyScore = isPrimaryCorrect ? 10 : 0;
 
-    const diagnosisScore = isCorrect ? 40 : 0;
+    // 2. Differential Working Matrix Metric (30 pts)
+    let differentialScore = 0;
+    const d1Match = diff1.toLowerCase().trim().includes(correct);
+    const d2Match = diff2.toLowerCase().trim().includes(correct);
+    const d3Match = diff3.toLowerCase().trim().includes(correct);
+
+    if (isPrimaryCorrect) {
+      differentialScore = 30; // Perfect mapping match
+    } else if (d1Match || d2Match || d3Match) {
+      differentialScore = 20; // On the secondary spectrum
+    } else {
+      const activeDiffsCount = [diff1, diff2, diff3].filter(d => d.trim().length > 0).length;
+      differentialScore = activeDiffsCount * 5; // Basic process points for thinking of alternatives
+    }
+
+    // 3. Physical Exam Metric (20 pts)
     const totalExamsPerformed = Object.keys(performedExams).length;
     const examScore = Math.min(20, totalExamsPerformed * 4);
 
     setResult(
-      isCorrect
-        ? "Correct diagnosis 🎉"
-        : `Incorrect. Correct answer was: ${patient.disease.hidden.diagnosis}`
+      isPrimaryCorrect
+        ? "Correct working diagnosis 🎉"
+        : (d1Match || d2Match || d3Match)
+          ? `Inquiry Alert: Correct target was down in your differentials! (${patient.disease.hidden.diagnosis})`
+          : `Incorrect. Primary presentation path was: ${patient.disease.hidden.diagnosis}`
     );
 
     const summaryBlock = `Exams Performed: ${Object.keys(performedExams).join(", ") || "None"}`;
 
     try {
       const res = await fetch("/api/score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          investigationSummary: summaryBlock,
-          chiefComplaint: patient.disease.presentation.chiefComplaint,
-          correctDiagnosis: patient.disease.hidden.diagnosis,
-          finalDiagnosis: diagnosis
-        }),
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    investigationSummary: summaryBlock,
+    chiefComplaint: patient.disease.presentation.chiefComplaint,
+    correctDiagnosis: patient.disease.hidden.diagnosis,
+    finalDiagnosis: diagnosis,
+    differentials: [diff1, diff2, diff3],
+    performedExamsCount: Object.keys(performedExams).length
+  }),
+});
+
 
       const data = await res.json();
-      const totalScore = Math.max(0, Math.min(100, Math.round(diagnosisScore + examScore + (data.historyScore ?? 0))));
-      setScore(totalScore);
-      setFeedback(data.feedback ?? "Evaluation compiled.");
+      
+      // 4. History Chat Metric from LLM Evaluation (40 pts max)
+      const rawHistory = data.historyScore ?? 25; 
+      const historyScore = Math.max(0, Math.min(40, Math.round((rawHistory / 40) * 40)));
 
-      // PUSH TELEMETRY LOG DIRECTLY TO DASHBOARD STORAGE
+      const totalScore = Math.max(0, Math.min(100, accuracyScore + differentialScore + examScore + historyScore));
+      
+      setScore(totalScore);
+      setScoreBreakdown({
+        history: historyScore,
+        exam: examScore,
+        differential: differentialScore,
+        accuracy: accuracyScore
+      });
+      setFeedback(data.feedback ?? "Evaluation compiled successfully.");
+
       const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
       const newLog = {
         id: Date.now().toString(),
         patientName: patient.name,
         correctDiagnosis: patient.disease.hidden.diagnosis,
         finalScore: totalScore,
-        timestamp: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric"
-        }) + " • " + new Date().toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit"
-        })
+        timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([newLog, ...currentLogs]));
 
     } catch (e) {
-      const fallbackScore = diagnosisScore + examScore + 15;
-      setScore(fallbackScore);
+      // Fallback Engine Breakdown Calculation
+      const historyFallback = 25;
+      const totalScore = accuracyScore + differentialScore + examScore + historyFallback;
+      
+      setScore(totalScore);
+      setScoreBreakdown({
+        history: historyFallback,
+        exam: examScore,
+        differential: differentialScore,
+        accuracy: accuracyScore
+      });
       setFeedback("Scoring evaluation completed with internal fallback logic values.");
 
-      // FALLBACK COLD LOG TO STORAGE
       const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
       const fallbackLog = {
         id: Date.now().toString(),
         patientName: patient.name,
         correctDiagnosis: patient.disease.hidden.diagnosis,
-        finalScore: fallbackScore,
+        finalScore: totalScore,
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([fallbackLog, ...currentLogs]));
@@ -257,17 +310,15 @@ export default function LabsPage() {
     }
   }
 
-
   if (!patient) return null;
   const isSessionEnded = score !== null;
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 bg-[#070a12] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#111a2e] via-[#070a12] to-[#04060a]">
       
-      {/* Dynamic Shell Grid Layout Container */}
       <div className="w-full max-w-6xl h-auto md:h-[85vh] md:max-h-[820px] grid grid-cols-1 md:grid-cols-12 gap-6 rounded-3xl bg-[#0d1527]/70 border border-slate-800 shadow-[0_0_50px_-12px_rgba(30,41,59,0.5)] backdrop-blur-xl p-4 sm:p-6 overflow-hidden">
         
-        {/* LEFT COMPONENT COLUMN */}
+        {/* LEFT COLUMN: History Chat & Intake */}
         <div className="md:col-span-7 flex flex-col h-full min-h-0 justify-between space-y-4">
           <div className="space-y-4 shrink-0">
             <div className="flex justify-between items-center">
@@ -283,7 +334,6 @@ export default function LabsPage() {
               </Link>
             </div>
 
-            {/* Profile Header Module */}
             <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900/90 to-slate-900/40 border border-slate-800 flex items-center gap-4 group hover:border-indigo-500/20 transition-colors">
               <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
                 <img 
@@ -319,7 +369,6 @@ export default function LabsPage() {
               </div>
             </div>
 
-            {/* Evaluation Station Tracking Card */}
             {timeLeft !== null && (
               <div className={`p-3 rounded-xl border flex items-center justify-between shadow-md transition-all duration-500 ${
                 !hasStarted 
@@ -361,13 +410,11 @@ export default function LabsPage() {
               </div>
             )}
 
-            {/* Presenting Complaint Display Component */}
             <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 shadow-inner">
               <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Presenting Complaint</p>
               <p className="text-sm text-slate-200 font-medium leading-relaxed">{patient.disease.presentation?.chiefComplaint ?? "No data available."}</p>
             </div>
 
-            {/* Primary Query Text Entry Target */}
             <div className="relative flex items-center">
               <textarea
                 value={question}
@@ -406,8 +453,7 @@ export default function LabsPage() {
             </div>
           </div>
 
-          {/* Flexible Conversation Stream Component */}
-          <div className="flex-1 min-h-[160px] relative flex flex-col overflow-hidden border-t border-slate-800/60 pt-2">
+          <div className="flex-1 min-h-[140px] relative flex flex-col overflow-hidden border-t border-slate-800/60 pt-2">
             <div 
               ref={chatContainerRef} 
               className="absolute inset-0 overflow-y-auto pr-1 space-y-3 scrollbar-thin scrollbar-thumb-slate-800/80 scrollbar-track-transparent pb-4"
@@ -439,10 +485,9 @@ export default function LabsPage() {
               ))}
             </div>
           </div>
-
         </div>
 
-        {/* RIGHT COMPONENT PANEL */}
+        {/* RIGHT COLUMN: Objective Assessment, DDx Board, & Mixed Scoring */}
         <div className="md:col-span-5 border-t md:border-t-0 md:border-l border-slate-800/80 pt-4 md:pt-0 md:pl-6 flex flex-col h-full min-h-0 justify-between space-y-4">
           
           <div className="flex flex-col flex-1 min-h-0 space-y-4">
@@ -453,7 +498,6 @@ export default function LabsPage() {
               <h2 className="text-sm font-bold text-slate-100 tracking-tight">Objective Physical Assessment</h2>
             </div>
             
-            {/* Action Targets Chip Grid */}
             <div className="grid grid-cols-2 gap-2 shrink-0">
               {(["vitals", "heent", "chest", "abdomen", "neuro"] as const).map((examType) => {
                 const isChecked = performedExams[examType];
@@ -479,24 +523,22 @@ export default function LabsPage() {
               })}
             </div>
 
-            {/* Scrollable Clinical Assessment Stream */}
-            <div className="flex-1 min-h-[140px] relative overflow-hidden border-t border-slate-800/40 pt-2">
+            <div className="h-[105px] relative overflow-hidden border-t border-slate-800/40 pt-2 shrink-0">
               <div className="absolute inset-0 overflow-y-auto pr-1 space-y-2.5 scrollbar-thin scrollbar-thumb-slate-800/80 scrollbar-track-transparent pb-2">
                 {Object.keys(performedExams).length === 0 ? (
-                  <div className="h-full flex items-center justify-center p-6 text-center rounded-2xl border border-dashed border-slate-800 text-slate-500 text-xs">
-                    No clinical parameters logged. Select procedural systems above.
+                  <div className="h-full flex items-center justify-center p-4 text-center rounded-2xl border border-dashed border-slate-800 text-slate-500 text-xs">
+                    No clinical parameters logged. Select systems above.
                   </div>
                 ) : (
                   Object.keys(performedExams).map((type) => {
                     const examKey = type as keyof Required<Patient["disease"]["hidden"]>["examination"];
                     return (
-                      <div key={type} className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-inner hover:border-emerald-500/20 transition-colors">
+                      <div key={type} className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-inner hover:border-emerald-500/20 transition-colors">
                         <div className="flex items-center justify-between mb-1 border-b border-slate-800/40 pb-1">
                           <p className="text-[9px] font-mono font-black text-emerald-400 uppercase tracking-widest">{type} Metrics Report</p>
-                          <span className="text-[7px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-mono uppercase font-black">Logged</span>
                         </div>
                         <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                          {patient.disease.hidden?.examination?.[examKey] || "Standard parameter ranges. No regional systematic anomalies detected."}
+                          {patient.disease.hidden?.examination?.[examKey] || "Standard ranges. No systematic anomalies detected."}
                         </p>
                       </div>
                     );
@@ -504,18 +546,55 @@ export default function LabsPage() {
                 )}
               </div>
             </div>
+
+            {/* Differential Diagnosis (DDx) Tracker */}
+            <div className="flex-1 min-h-[140px] flex flex-col space-y-2 border-t border-slate-800/40 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest">Differential Diagnostics (DDx Board)</span>
+                <span className="text-[8px] bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded font-mono font-bold">Max 30 Pts</span>
+              </div>
+              <div className="space-y-1.5 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                <input
+                  type="text"
+                  value={diff1}
+                  onChange={(e) => setDiff1(e.target.value)}
+                  disabled={!hasStarted || isGrading || isSessionEnded}
+                  placeholder="Secondary Diagnosis Differential #1..."
+                  className="w-full p-2 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/40"
+                />
+                <input
+                  type="text"
+                  value={diff2}
+                  onChange={(e) => setDiff2(e.target.value)}
+                  disabled={!hasStarted || isGrading || isSessionEnded}
+                  placeholder="Secondary Diagnosis Differential #2..."
+                  className="w-full p-2 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/40"
+                />
+                <input
+                  type="text"
+                  value={diff3}
+                  onChange={(e) => setDiff3(e.target.value)}
+                  disabled={!hasStarted || isGrading || isSessionEnded}
+                  placeholder="Secondary Diagnosis Differential #3..."
+                  className="w-full p-2 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/40"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Sticky Submission & Core Score Block */}
+          {/* Sticky Submission & Score Reports */}
           <div className="border-t border-slate-800/60 pt-3 space-y-2.5 shrink-0">
-            <input
-              type="text"
-              value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
-              disabled={!hasStarted || isGrading || isSessionEnded}
-              placeholder="Formulate diagnostic differential..."
-              className="w-full p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/20 disabled:opacity-40 shadow-inner"
-            />
+            <div className="space-y-1">
+              <span className="text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-widest block pl-1">Primary Final Assessment</span>
+              <input
+                type="text"
+                value={diagnosis}
+                onChange={(e) => setDiagnosis(e.target.value)}
+                disabled={!hasStarted || isGrading || isSessionEnded}
+                placeholder="Commit to primary final diagnosis..."
+                className="w-full p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/20 disabled:opacity-40 shadow-inner"
+              />
+            </div>
             
             <button
               onClick={submitDiagnosis}
@@ -539,9 +618,8 @@ export default function LabsPage() {
               )}
             </button>
 
-            {/* Assessment Score Card Module */}
             {isSessionEnded && (
-              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2.5 shadow-lg animate-[fadeIn_0.3s_ease-out]">
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2.5 shadow-lg animate-[fadeIn_0.3s_ease-out] overflow-y-auto max-h-[220px] custom-scrollbar">
                 <div className="flex justify-between items-center border-b border-slate-800/80 pb-2">
                   <div>
                     <h3 className="text-xs font-bold text-white tracking-tight">OSCE Evaluation Summary</h3>
@@ -551,8 +629,30 @@ export default function LabsPage() {
                     <span className="text-lg font-mono font-black text-emerald-400">{score}/100</span>
                   </div>
                 </div>
+
+                {/* Granular Breakdown Sub-panel */}
+                {scoreBreakdown && (
+                  <div className="grid grid-cols-2 gap-1.5 p-2 rounded-xl bg-slate-950/40 border border-slate-800/60 font-mono text-[10px]">
+                    <div className="flex justify-between border-b border-slate-800/40 pb-1">
+                      <span className="text-slate-400">History Chat:</span>
+                      <span className="text-indigo-300 font-bold">{scoreBreakdown.history}/40</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-800/40 pb-1">
+                      <span className="text-slate-400">DDx Tracks:</span>
+                      <span className="text-indigo-300 font-bold">{scoreBreakdown.differential}/30</span>
+                    </div>
+                    <div className="flex justify-between pt-0.5">
+                      <span className="text-slate-400">Physical Exam:</span>
+                      <span className="text-emerald-400 font-bold">{scoreBreakdown.exam}/20</span>
+                    </div>
+                    <div className="flex justify-between pt-0.5">
+                      <span className="text-slate-400">Primary Match:</span>
+                      <span className="text-emerald-400 font-bold">{scoreBreakdown.accuracy}/10</span>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="text-xs text-slate-300 leading-relaxed max-h-24 overflow-y-auto bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 shadow-inner custom-scrollbar">
+                <div className="text-xs text-slate-300 leading-relaxed bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 shadow-inner">
                   {feedback}
                 </div>
                 
