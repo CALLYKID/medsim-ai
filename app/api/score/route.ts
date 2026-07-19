@@ -21,9 +21,10 @@ export async function POST(req: Request) {
       chiefComplaint, 
       correctDiagnosis, 
       finalDiagnosis,
-      // NEW PARAMS FROM THE UPDATED LABS PAGE:
       differentials,
-      performedExamsCount
+      performedExamsCount,
+      personality,
+       painTolerance
     } = body;
 
         const prompt = `You are an expert medical school objective clinical examiner grading a student's history-taking performance during an OSCE simulation.
@@ -44,6 +45,9 @@ Evaluate the history-taking chat component out of 40 points total. Use the stude
 SCORING CRITERIA (40 Points Max):
 1. Relevancy & Strategy (Up to 20 pts): Did their history questions align with ruling in/out the diseases they listed on their DDx board? If their questions seem random but align with a listed differential, award higher points for strategic tracking.
 2. Efficiency & Clinical Flow (Up to 20 pts): Did they follow a logical path based on the chief complaint? Deduct points if they repeated questions, asked completely irrelevant questions outside their DDx scope, or failed to explore the presenting symptom.
+3. Communication & Empathy (up to 10 pts): Review how the student interacted with the patient's personality ("${personality}") and pain tolerance ("${painTolerance}"). Did they show empathy when appropriate, or were they strictly robotic and dismissive of the patient's state?
+
+
 
 OUTPUT SPECIFICATION:
 Provide a score for the history-taking part only. Then write a highly customized, concise 2-sentence feedback string referencing their overall approach. Acknowledge if their differentials correctly guided their questioning.
@@ -51,6 +55,7 @@ Provide a score for the history-taking part only. Then write a highly customized
 You must respond with a strictly valid JSON object matching this exact format:
 {
   "historyScore": <integer between 0 and 40>,
+   "empathyScore": <integer between 0 and 10>,
   "feedback": "<concise 2-sentence feedback string>"
 }`;
 

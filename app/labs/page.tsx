@@ -250,7 +250,9 @@ export default function LabsPage() {
     correctDiagnosis: patient.disease.hidden.diagnosis,
     finalDiagnosis: diagnosis,
     differentials: [diff1, diff2, diff3],
-    performedExamsCount: Object.keys(performedExams).length
+    performedExamsCount: Object.keys(performedExams).length,
+    personality: patient.personality,
+    painTolerance: patient.painTolerance
   }),
 });
 
@@ -260,7 +262,7 @@ export default function LabsPage() {
       // 4. History Chat Metric from LLM Evaluation (40 pts max)
       const rawHistory = data.historyScore ?? 25; 
       const historyScore = Math.max(0, Math.min(40, Math.round((rawHistory / 40) * 40)));
-
+    const empathyScore = Math.max(0, Math.min(100, data.empathyScore ?? 7));
       const totalScore = Math.max(0, Math.min(100, accuracyScore + differentialScore + examScore + historyScore));
       
       setScore(totalScore);
@@ -268,6 +270,7 @@ export default function LabsPage() {
         history: historyScore,
         exam: examScore,
         differential: differentialScore,
+        empathy: empathyScore,
         accuracy: accuracyScore
       });
       setFeedback(data.feedback ?? "Evaluation compiled successfully.");
@@ -630,27 +633,32 @@ export default function LabsPage() {
                   </div>
                 </div>
 
-                {/* Granular Breakdown Sub-panel */}
-                {scoreBreakdown && (
-                  <div className="grid grid-cols-2 gap-1.5 p-2 rounded-xl bg-slate-950/40 border border-slate-800/60 font-mono text-[10px]">
-                    <div className="flex justify-between border-b border-slate-800/40 pb-1">
-                      <span className="text-slate-400">History Chat:</span>
-                      <span className="text-indigo-300 font-bold">{scoreBreakdown.history}/40</span>
-                    </div>
-                    <div className="flex justify-between border-b border-slate-800/40 pb-1">
-                      <span className="text-slate-400">DDx Tracks:</span>
-                      <span className="text-indigo-300 font-bold">{scoreBreakdown.differential}/30</span>
-                    </div>
-                    <div className="flex justify-between pt-0.5">
-                      <span className="text-slate-400">Physical Exam:</span>
-                      <span className="text-emerald-400 font-bold">{scoreBreakdown.exam}/20</span>
-                    </div>
-                    <div className="flex justify-between pt-0.5">
-                      <span className="text-slate-400">Primary Match:</span>
-                      <span className="text-emerald-400 font-bold">{scoreBreakdown.accuracy}/10</span>
-                    </div>
-                  </div>
-                )}
+{/* Granular Breakdown Sub-panel */}
+{scoreBreakdown && (
+  <div className="flex flex-col gap-2 p-3 rounded-xl bg-slate-950/40 border border-slate-800/60 font-mono text-[11px]">
+    <div className="flex justify-between border-b border-slate-800/40 pb-1.5">
+      <span className="text-slate-400">History Chat:</span>
+      <span className="text-indigo-300 font-bold">{scoreBreakdown.history}/30</span>
+    </div>
+    <div className="flex justify-between border-b border-slate-800/40 pb-1.5">
+      <span className="text-slate-400">DDx Tracks:</span>
+      <span className="text-indigo-300 font-bold">{scoreBreakdown.differential}/30</span>
+    </div>
+    <div className="flex justify-between border-b border-slate-800/40 pb-1.5">
+      <span className="text-slate-400">Bedside Manner / Empathy:</span>
+      <span className="text-indigo-300 font-bold">{scoreBreakdown.empathy}/10</span>
+    </div>
+    <div className="flex justify-between border-b border-slate-800/40 pb-1.5">
+      <span className="text-slate-400">Physical Exam:</span>
+      <span className="text-emerald-400 font-bold">{scoreBreakdown.exam}/20</span>
+    </div>
+    <div className="flex justify-between pt-0.5">
+      <span className="text-slate-400">Primary Match:</span>
+      <span className="text-emerald-400 font-bold">{scoreBreakdown.accuracy}/10</span>
+    </div>
+  </div>
+)}
+
                 
                 <div className="text-xs text-slate-300 leading-relaxed bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 shadow-inner">
                   {feedback}
