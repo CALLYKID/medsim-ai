@@ -80,6 +80,7 @@ export default function LabsPage() {
     exam: number;
     differential: number;
     accuracy: number;
+    empathy: number;
   } | null>(null);
   
   const [feedback, setFeedback] = useState(""); 
