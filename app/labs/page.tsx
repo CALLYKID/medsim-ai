@@ -208,11 +208,9 @@ export default function LabsPage() {
     const correct = patient.disease.hidden.diagnosis.toLowerCase().trim();
     const finalUserDiag = diagnosis.toLowerCase().trim();
     
-    // 1. Accuracy Metric (10 pts)
     const isPrimaryCorrect = finalUserDiag.includes(correct);
     const accuracyScore = isPrimaryCorrect ? 10 : 0;
 
-    // 2. Differential Working Matrix Metric (30 pts)
     let differentialScore = 0;
     const d1Match = diff1.toLowerCase().trim().includes(correct);
     const d2Match = diff2.toLowerCase().trim().includes(correct);
@@ -227,7 +225,6 @@ export default function LabsPage() {
       differentialScore = activeDiffsCount * 5; 
     }
 
-    // 3. Physical Exam Metric (20 pts)
     const totalExamsPerformed = Object.keys(performedExams).length;
     const examScore = Math.min(20, totalExamsPerformed * 4);
 
@@ -320,7 +317,7 @@ export default function LabsPage() {
   return (
     <main className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 lg:p-8 bg-[#05070c] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0e1628] via-[#05070c] to-[#020305]">
       
-      <div className="w-full max-w-7xl h-auto lg:h-[92vh] lg:max-h-[960px] grid grid-cols-1 lg:grid-cols-12 gap-6 rounded-3xl bg-[#0b111e]/80 border border-slate-800/80 shadow-[0_0_60px_-15px_rgba(15,23,42,0.8)] backdrop-blur-2xl p-5 sm:p-7 overflow-hidden">
+      <div className="w-full max-w-7xl h-auto lg:h-[92vh] lg:max-h-[960px] grid grid-cols-1 lg:grid-cols-12 gap-6 rounded-3xl bg-[#0b111e]/90 border border-slate-800/80 shadow-[0_0_60px_-15px_rgba(15,23,42,0.8)] backdrop-blur-2xl p-5 sm:p-7 overflow-hidden">
         
         {/* LEFT COLUMN: History Chat & Intake */}
         <div className="lg:col-span-7 flex flex-col h-full min-h-0 justify-between space-y-4">
@@ -491,10 +488,11 @@ export default function LabsPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Objective Assessment, DDx Board, & Mixed Scoring */}
-        <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-5 lg:pt-0 lg:pl-7 flex flex-col h-full min-h-0 justify-between space-y-4">
+        {/* RIGHT COLUMN: Objective Assessment, DDx Board, & Mixed Scoring (Fixed Grid Layout) */}
+        <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-slate-800/80 pt-5 lg:pt-0 lg:pl-7 flex flex-col h-full min-h-0 justify-between">
           
-          <div className="flex flex-col flex-1 min-h-0 space-y-4">
+          {/* Scrollable Upper Sub-panel for Physical Exams */}
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-4 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent pb-3">
             <div className="flex items-center gap-2.5 shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.25 2.25 0 0 1 10.5 2.25h4.5a2.25 2.25 0 0 1 2.25 2.25m-7.25 15.5H4.5A2.25 2.25 0 0 1 2.25 18V6.108c0-1.135.845-2.098 1.976-2.192a48.424 48.424 0 0 1 1.123-.08" />
@@ -510,7 +508,7 @@ export default function LabsPage() {
                     key={examType} 
                     onClick={() => runPhysicalExam(examType)}
                     disabled={!hasStarted || isGrading || isSessionEnded}
-                    className={`cursor-pointer group p-3 rounded-xl text-xs font-bold uppercase tracking-wider border flex items-center justify-between transition-all duration-200 active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`cursor-pointer group p-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border flex items-center justify-between transition-all duration-200 active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isChecked 
                         ? "bg-emerald-950/30 border-emerald-500/40 text-emerald-400 shadow-md" 
                         : "bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
@@ -527,43 +525,43 @@ export default function LabsPage() {
               })}
             </div>
 
-            <div className="h-[120px] relative overflow-hidden border-t border-slate-800/60 pt-2 shrink-0">
-              <div className="absolute inset-0 overflow-y-auto pr-1.5 space-y-2.5 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent pb-2">
-                {Object.keys(performedExams).length === 0 ? (
-                  <div className="h-full flex items-center justify-center p-4 text-center rounded-2xl border border-dashed border-slate-800/80 text-slate-500 text-xs">
-                    No clinical parameters logged. Select system check above.
-                  </div>
-                ) : (
-                  Object.keys(performedExams).map((type) => {
-                    const examKey = type as keyof Required<Patient["disease"]["hidden"]>["examination"];
-                    return (
-                      <div key={type} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 shadow-inner hover:border-emerald-500/30 transition-colors">
-                        <div className="flex items-center justify-between mb-1 border-b border-slate-800/50 pb-1">
-                          <p className="text-[10px] font-mono font-black text-emerald-400 uppercase tracking-widest">{type} Metrics Report</p>
-                        </div>
-                        <p className="text-xs text-slate-200 leading-relaxed font-medium">
-                          {patient.disease.hidden?.examination?.[examKey] || "Standard baseline ranges. No anomalies detected."}
-                        </p>
+            <div className="min-h-[110px] space-y-2">
+              {Object.keys(performedExams).length === 0 ? (
+                <div className="h-[110px] flex items-center justify-center p-4 text-center rounded-2xl border border-dashed border-slate-800/80 text-slate-500 text-xs">
+                  No clinical parameters logged. Select system check above.
+                </div>
+              ) : (
+                Object.keys(performedExams).map((type) => {
+                  const examKey = type as keyof Required<Patient["disease"]["hidden"]>["examination"];
+                  return (
+                    <div key={type} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 shadow-inner hover:border-emerald-500/30 transition-colors">
+                      <div className="flex items-center justify-between mb-1 border-b border-slate-800/50 pb-1">
+                        <p className="text-[10px] font-mono font-black text-emerald-400 uppercase tracking-widest">{type} Metrics Report</p>
                       </div>
-                    );
-                  })
-                )}
-              </div>
+                      <p className="text-xs text-slate-200 leading-relaxed font-medium">
+                        {patient.disease.hidden?.examination?.[examKey] || "Standard baseline ranges. No anomalies detected."}
+                      </p>
+                    </div>
+                  );
+                })
+              )}
             </div>
+          </div>
 
-            {/* Differential Diagnosis (DDx) Tracker */}
-            <div className="flex-1 min-h-[150px] flex flex-col space-y-2 border-t border-slate-800/60 pt-2">
+          {/* Sticky Lower Section: DDx Board & Submissions (Never Overlaps) */}
+          <div className="border-t border-slate-800/80 pt-4 space-y-3 shrink-0 bg-[#0b111e]/95">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest">Differential Diagnostics (DDx Board)</span>
                 <span className="text-[9px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded font-mono font-bold border border-indigo-500/20">Max 30 Pts</span>
               </div>
-              <div className="space-y-2 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-800">
+              <div className="grid grid-cols-3 gap-2">
                 <input
                   type="text"
                   value={diff1}
                   onChange={(e) => setDiff1(e.target.value)}
                   disabled={!hasStarted || isGrading || isSessionEnded}
-                  placeholder="Secondary Diagnosis Differential #1..."
+                  placeholder="DDx #1..."
                   className="cursor-text w-full p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 disabled:cursor-not-allowed"
                 />
                 <input
@@ -571,7 +569,7 @@ export default function LabsPage() {
                   value={diff2}
                   onChange={(e) => setDiff2(e.target.value)}
                   disabled={!hasStarted || isGrading || isSessionEnded}
-                  placeholder="Secondary Diagnosis Differential #2..."
+                  placeholder="DDx #2..."
                   className="cursor-text w-full p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 disabled:cursor-not-allowed"
                 />
                 <input
@@ -579,15 +577,12 @@ export default function LabsPage() {
                   value={diff3}
                   onChange={(e) => setDiff3(e.target.value)}
                   disabled={!hasStarted || isGrading || isSessionEnded}
-                  placeholder="Secondary Diagnosis Differential #3..."
+                  placeholder="DDx #3..."
                   className="cursor-text w-full p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-200 text-xs placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Sticky Submission & Score Reports */}
-          <div className="border-t border-slate-800/80 pt-3.5 space-y-3 shrink-0">
             <div className="space-y-1">
               <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest block pl-1">Primary Final Assessment</span>
               <input
@@ -596,14 +591,14 @@ export default function LabsPage() {
                 onChange={(e) => setDiagnosis(e.target.value)}
                 disabled={!hasStarted || isGrading || isSessionEnded}
                 placeholder="Commit to primary final diagnosis..."
-                className="cursor-text w-full p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed shadow-inner"
+                className="cursor-text w-full p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed shadow-inner"
               />
             </div>
             
             <button
               onClick={submitDiagnosis}
               disabled={!hasStarted || !diagnosis.trim() || isGrading || isSessionEnded}
-              className={`w-full p-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2.5 ${
+              className={`w-full p-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2.5 ${
                 isSessionEnded
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50"
                   : "cursor-pointer bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-900 disabled:cursor-not-allowed border border-emerald-500/30 disabled:border-slate-800 disabled:text-slate-600 text-slate-950 shadow-[0_4px_25px_rgba(16,185,129,0.2)] active:scale-98"
@@ -623,8 +618,8 @@ export default function LabsPage() {
             </button>
 
             {isSessionEnded && (
-              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-xl animate-[fadeIn_0.3s_ease-out] overflow-y-auto max-h-[260px] scrollbar-thin scrollbar-thumb-slate-800">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-2.5">
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-xl animate-[fadeIn_0.3s_ease-out] overflow-y-auto max-h-[220px] scrollbar-thin scrollbar-thumb-slate-800">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
                   <div>
                     <h3 className="text-xs font-bold text-white tracking-tight">OSCE Evaluation Summary</h3>
                     <p className="text-[11px] text-slate-300 font-mono mt-0.5">{result}</p>
@@ -634,22 +629,21 @@ export default function LabsPage() {
                   </div>
                 </div>
 
-                {/* Granular Breakdown Sub-panel */}
                 {scoreBreakdown && (
-                  <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 font-mono text-xs shadow-inner">
-                    <div className="flex justify-between border-b border-slate-800/60 pb-1.5">
+                  <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 font-mono text-xs shadow-inner">
+                    <div className="flex justify-between border-b border-slate-800/60 pb-1">
                       <span className="text-slate-400">History Chat:</span>
                       <span className="text-indigo-300 font-bold">{scoreBreakdown.history}/30</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-800/60 pb-1.5">
+                    <div className="flex justify-between border-b border-slate-800/60 pb-1">
                       <span className="text-slate-400">DDx Tracks:</span>
                       <span className="text-indigo-300 font-bold">{scoreBreakdown.differential}/30</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-800/60 pb-1.5">
+                    <div className="flex justify-between border-b border-slate-800/60 pb-1">
                       <span className="text-slate-400">Bedside Manner / Empathy:</span>
                       <span className="text-indigo-300 font-bold">{scoreBreakdown.empathy}/10</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-800/60 pb-1.5">
+                    <div className="flex justify-between border-b border-slate-800/60 pb-1">
                       <span className="text-slate-400">Physical Exam:</span>
                       <span className="text-emerald-400 font-bold">{scoreBreakdown.exam}/20</span>
                     </div>
