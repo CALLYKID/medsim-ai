@@ -302,9 +302,7 @@ learningPoints: patient.learningPoints,
 redFlags: patient.disease.hidden.redFlags,
 
 
-redFlags:[
-...patient.disease.hidden.redFlags
-],
+
 
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
@@ -352,9 +350,7 @@ learningPoints: patient.learningPoints,
 redFlags: patient.disease.hidden.redFlags,
 
 
-redFlags:[
-...patient.disease.hidden.redFlags
-],
+
   
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
