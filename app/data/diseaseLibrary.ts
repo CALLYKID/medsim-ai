@@ -61,11 +61,11 @@ gradingRubric?: {
   };
 
   investigations: {
-  bloods: string[];
-  imaging: string[];
+  bloods?: string[];
+  imaging?: string[];
   ecg?: string[];
   urine?: string[];
-    stool?: string[];
+  stool?: string[];
 };
 
   treatment: {
