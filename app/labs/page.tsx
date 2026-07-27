@@ -527,7 +527,7 @@ redFlags: patient.disease.hidden.redFlags,
                   <p className={`text-[10px] font-mono font-bold tracking-wider uppercase mb-1.5 ${m.role === "user" ? "text-indigo-400" : "text-emerald-400"}`}>
                     {m.role === "user" ? "Primary Practitioner" : "Patient Response"}
                   </p>
-                  {m.role === "ai" && m.isNewAI && idx === 0 
+                  {m.role === "assistant" && m.isNewAI && idx === 0 
                     ? <StreamingText text={m.text} /> 
                     : <p className="text-slate-100 text-sm leading-relaxed tracking-wide">{m.text}</p>
                   }
