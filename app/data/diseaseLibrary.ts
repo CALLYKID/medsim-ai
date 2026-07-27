@@ -65,6 +65,7 @@ gradingRubric?: {
   imaging: string[];
   ecg?: string[];
   urine?: string[];
+    stool?: string[];
 };
 
   treatment: {
