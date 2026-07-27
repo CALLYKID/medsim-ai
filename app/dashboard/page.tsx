@@ -4,12 +4,21 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface ShiftLog {
-  id: string;
-  patientName: string;
-  correctDiagnosis: string;
-  finalScore: number;
-  timestamp?: string;
+ id:string;
+ patientName:string;
+ correctDiagnosis:string;
+ finalScore:number;
+ timestamp?:string;
+
+ category?:string;
+ severity?:string;
+
+ difficulty?: "Easy" | "Moderate" | "Hard" | "Expert";
+
+ learningPoints?:string[];
+ redFlags?:string[];
 }
+
 
 export default function DashboardPage() {
   const [shiftHistory, setShiftHistory] = useState<ShiftLog[]>([]);
@@ -37,6 +46,56 @@ export default function DashboardPage() {
       setActiveModalLog(null);
     }, 200);
   };
+  
+  const categoryStats = shiftHistory.reduce((acc, log)=>{
+ const category = log.category || "Unknown";
+
+ acc[category] = (acc[category] || 0) + 1;
+
+ return acc;
+}, {} as Record<string,number>);
+
+
+    const severityStats = shiftHistory.reduce((acc, log)=>{
+ const severity = log.severity || "Unknown";
+
+ acc[severity] = (acc[severity] || 0) + 1;
+
+ return acc;
+}, {} as Record<string,number>);
+
+
+
+
+const categoryPerformance = shiftHistory.reduce((acc, log)=>{
+
+ const category = log.category || "Unknown";
+
+ if(!acc[category]){
+   acc[category]={
+     total:0,
+     score:0
+   };
+ }
+
+ acc[category].total++;
+ acc[category].score += log.finalScore;
+
+ return acc;
+
+}, {} as Record<string,{total:number;score:number}>);
+
+
+const weakestArea =
+Object.entries(categoryPerformance)
+.sort((a,b)=>{
+
+ const avgA=a[1].score/a[1].total;
+ const avgB=b[1].score/b[1].total;
+
+ return avgA-avgB;
+
+})[0];
 
   const averageScore = shiftHistory.length > 0 
     ? Math.round(shiftHistory.reduce((acc, curr) => acc + curr.finalScore, 0) / shiftHistory.length)
@@ -123,6 +182,234 @@ export default function DashboardPage() {
             <p className="text-[9px] sm:text-[10px] text-gray-500 mt-2 sm:mt-3 border-t border-white/5 pt-2">Global session score index</p>
           </div>
         </div>
+              {/* CLINICAL EXPOSURE CATEGORY BREAKDOWN */}
+        {shiftHistory.length > 0 && (
+          <div className="rounded-2xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-5 shadow-xl">
+
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                Clinical Exposure
+              </h2>
+
+              <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-lg border border-indigo-500/20">
+                {Object.keys(categoryStats).length} specialties
+              </span>
+            </div>
+
+
+            <div className="space-y-4">
+
+              {Object.entries(categoryStats)
+              .sort((a,b)=>b[1]-a[1])
+              .map(([category,count])=>(
+
+                <div key={category}>
+
+                  <div className="flex justify-between items-center mb-1">
+
+                    <span className="text-xs text-gray-300 font-medium">
+                      {category}
+                    </span>
+
+                    <span className="text-xs text-indigo-400 font-mono">
+                      {count} cases
+                    </span>
+
+                  </div>
+
+
+                  <div className="h-2 bg-black/40 rounded-full overflow-hidden">
+
+                    <div
+                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700"
+                      style={{
+                        width:`${(count / shiftHistory.length) * 100}%`
+                      }}
+                    />
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+        )}
+        
+        {/* SEVERITY DISTRIBUTION */}
+
+<div className="rounded-2xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-5 shadow-xl">
+
+<h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+Patient Acuity Profile
+</h2>
+
+<div className="grid grid-cols-2 gap-3">
+
+{Object.entries(severityStats).map(([severity,count])=>(
+
+<div
+key={severity}
+className="bg-black/20 border border-white/5 rounded-xl p-3"
+>
+
+<p className="text-xs text-gray-400">
+{severity}
+</p>
+
+<p className="text-2xl font-black text-white">
+{count}
+</p>
+
+</div>
+
+))}
+
+</div>
+
+</div>
+
+{/* CASE DIFFICULTY PROFILE */}
+
+<div className="rounded-2xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-5 shadow-xl">
+
+<h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+Case Difficulty Profile
+</h2>
+
+
+<div className="grid grid-cols-2 gap-3">
+
+
+{["Easy","Moderate","Hard","Expert"].map(level=>{
+
+
+const count = shiftHistory.filter(
+log=>log.difficulty===level
+).length;
+
+
+return (
+
+<div
+key={level}
+className="bg-black/20 border border-white/5 rounded-xl p-4"
+>
+
+<p className="text-xs text-gray-400">
+{level}
+</p>
+
+<p className="text-3xl font-black text-white">
+{count}
+</p>
+
+</div>
+
+)
+
+
+})}
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+{/* PERFORMANCE BY CATEGORY */}
+
+<div className="rounded-2xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-5 shadow-xl">
+
+<h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+Diagnostic Performance Matrix
+</h2>
+
+
+<div className="space-y-4">
+
+{Object.entries(categoryPerformance)
+.map(([category,data])=>{
+
+const average=Math.round(data.score/data.total);
+
+return (
+
+<div key={category}>
+
+<div className="flex justify-between text-xs mb-1">
+
+<span className="text-gray-300">
+{category}
+</span>
+
+<span className={
+average>=70
+?"text-emerald-400"
+:"text-amber-400"
+}>
+{average}%
+</span>
+
+</div>
+
+
+<div className="h-2 bg-black/40 rounded-full overflow-hidden">
+
+<div
+className="h-full bg-indigo-500 rounded-full"
+style={{
+width:`${average}%`
+}}
+/>
+
+</div>
+
+
+</div>
+
+)
+
+})}
+
+</div>
+
+</div>
+
+
+
+{/* AI WEAKNESS DETECTOR */}
+
+{weakestArea && (
+
+<div className="rounded-2xl bg-gradient-to-r from-indigo-950/40 to-purple-950/40 border border-indigo-500/20 p-5 shadow-xl">
+
+<h2 className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-2">
+Clinical Performance Insight
+</h2>
+
+<p className="text-sm text-gray-300">
+
+Your current simulation history shows the lowest average score in{" "}
+
+<span className="text-indigo-400 font-bold">
+{weakestArea[0]}
+</span>.
+
+This is based only on completed cases and may change as more simulations are recorded.
+
+</p>
+
+</div>
+
+)}
+
 
         {/* HISTORICAL CLINICAL LOG TABLE */}
         <div className="rounded-2xl bg-[#0f1626]/40 backdrop-blur-md border border-white/5 shadow-2xl p-4 sm:p-5 overflow-hidden">
@@ -151,6 +438,11 @@ export default function DashboardPage() {
       <p className="text-[11px] text-gray-400 font-medium truncate">
         Differential Target: <span className="text-indigo-400/80 italic font-mono transition-colors group-hover:text-indigo-300">{log.correctDiagnosis}</span>
       </p>
+      <p className="text-[10px] text-gray-500">
+{log.category || "Unknown"}
+{" • "}
+{log.difficulty || "Unknown"}
+</p>
     </div>
 
     {/* RIGHT SIDE: METRIC MODULE WITH ACCESSIBLE EXPAND INDICATOR */}
@@ -222,6 +514,79 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3 pt-1">
+              
+              {activeModalLog.learningPoints &&
+activeModalLog.learningPoints.length > 0 && (
+
+<div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
+
+<span className="text-[10px] uppercase tracking-wider text-gray-400">
+Clinical Learning Points
+</span>
+
+
+<div className="mt-2 space-y-2">
+
+{activeModalLog.learningPoints.map((point,index)=>(
+
+<p
+key={index}
+className="text-xs text-gray-300"
+>
+✓ {point}
+</p>
+
+))}
+
+</div>
+
+</div>
+
+)}
+
+{activeModalLog.redFlags &&
+activeModalLog.redFlags.length > 0 && (
+
+<div className="p-3.5 rounded-xl bg-red-950/20 border border-red-500/20">
+
+<span className="text-[10px] uppercase tracking-wider text-red-400">
+Critical Red Flags
+</span>
+
+
+<div className="mt-2 space-y-2">
+
+{activeModalLog.redFlags.map((flag,index)=>(
+
+<p
+key={index}
+className="text-xs text-gray-300"
+>
+⚠ {flag}
+</p>
+
+))}
+
+</div>
+
+</div>
+
+)}
+              {activeModalLog.difficulty && (
+
+<div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
+
+<span className="text-[10px] uppercase tracking-wider text-gray-400">
+Case Difficulty
+</span>
+
+<p className="text-lg font-black text-purple-400">
+{activeModalLog.difficulty}
+</p>
+
+</div>
+
+)}
               <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 hover:border-white/10 transition-colors duration-300">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Full Differential Target</span>
                 <p className="text-xs sm:text-sm font-semibold text-indigo-300 font-mono leading-relaxed break-words">

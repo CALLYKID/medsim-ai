@@ -60,7 +60,7 @@ function StreamingText({ text, speed = 4 }: { text: string; speed?: number }) {
 
 export default function LabsPage() {
   const [messages, setMessages] = useState<
-    { id: number; role: "user" | "ai"; text: string; isNewAI?: boolean }[]
+    { id: number; role: "user" | "assistant"; text: string; isNewAI?: boolean }[]
   >([]);
 
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -170,10 +170,13 @@ export default function LabsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: currentQuestion,
-          context: currentPatientPrompt,
-          history: updatedHistoryForAPI
-        }),
+  message: currentQuestion,
+  context: {
+    patient,
+    disease: patient.disease
+  },
+  history: updatedHistoryForAPI
+})
       });
 
       const data = await res.json();    
@@ -181,7 +184,7 @@ export default function LabsPage() {
         setMessages((prev) => [    
           {    
             id: Date.now() + 1,    
-            role: "ai",    
+            role: "assistant",    
             text: data.reply,    
             isNewAI: true,    
           },    
@@ -278,6 +281,31 @@ export default function LabsPage() {
         patientName: patient.name,
         correctDiagnosis: patient.disease.hidden.diagnosis,
         finalScore: totalScore,
+        category: patient.disease.category,
+ specialty: patient.disease.medicalSpecialty,
+ severity: patient.disease.hidden.severity,
+    
+    difficulty:
+patient.disease.hidden.severity === "Critical"
+? "Expert"
+:
+patient.disease.hidden.severity === "Severe"
+? "Hard"
+:
+patient.disease.hidden.severity === "Moderate"
+? "Moderate"
+:
+"Easy",
+
+
+learningPoints: patient.learningPoints,
+redFlags: patient.disease.hidden.redFlags,
+
+
+redFlags:[
+...patient.disease.hidden.redFlags
+],
+
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([newLog, ...currentLogs]));
@@ -303,6 +331,31 @@ export default function LabsPage() {
         patientName: patient.name,
         correctDiagnosis: patient.disease.hidden.diagnosis,
         finalScore: totalScore,
+        category: patient.disease.category,
+ specialty: patient.disease.medicalSpecialty,
+ severity: patient.disease.hidden.severity,
+ 
+    difficulty:
+patient.disease.hidden.severity === "Critical"
+? "Expert"
+:
+patient.disease.hidden.severity === "Severe"
+? "Hard"
+:
+patient.disease.hidden.severity === "Moderate"
+? "Moderate"
+:
+"Easy",
+
+
+learningPoints: patient.learningPoints,
+redFlags: patient.disease.hidden.redFlags,
+
+
+redFlags:[
+...patient.disease.hidden.redFlags
+],
+  
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([fallbackLog, ...currentLogs]));
