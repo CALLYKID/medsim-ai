@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import PageTransition from "./components/PageTransition";
+import PageTransition from "../components/PageTransition";
 
 // Custom hook to handle scroll reveal animations cleanly
 function useIntersectionObserver() {
