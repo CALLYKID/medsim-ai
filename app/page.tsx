@@ -99,6 +99,16 @@ export default function LandingPage() {
             </a>
             
             <Link 
+  href="/about"
+  className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
+    after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+    after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
+    after:transition-transform after:duration-300 after:ease-out"
+>
+  About
+</Link>
+
+            <Link 
               href="/dashboard" 
               className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
                 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
@@ -161,6 +171,13 @@ export default function LandingPage() {
             >
               Performance Logs
             </Link>
+            <Link 
+  href="/about"
+  onClick={() => setIsMobileMenuOpen(false)}
+  className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+>
+  About
+</Link>
             <Link 
               href="/labs" 
               onClick={() => setIsMobileMenuOpen(false)}
