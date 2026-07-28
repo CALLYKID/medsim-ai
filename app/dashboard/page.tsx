@@ -130,11 +130,14 @@ export default function DashboardPage() {
           <div className="flex flex-row items-center gap-3 z-10 w-full md:w-auto">
             <Link
               href="/labs"
-              className="flex-1 md:flex-initial text-center whitespace-nowrap bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider text-white transition-all duration-200 shadow-xl shadow-indigo-600/25 border border-indigo-400/20 flex items-center justify-center gap-2"
+              className="flex-1 md:flex-initial text-center whitespace-nowrap bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider text-white transition-all duration-200 shadow-xl shadow-indigo-600/25 border border-indigo-400/20 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>+ Launch Active Exam</span>
             </Link>
-            <Link href="/" className="bg-white/5 hover:bg-white/10 active:scale-[0.98] px-5 py-3.5 rounded-2xl border border-white/5 text-xs font-bold uppercase tracking-wider transition-all duration-200 text-gray-300 text-center">
+            <Link 
+              href="/" 
+              className="bg-white/5 hover:bg-white/10 active:scale-[0.98] px-5 py-3.5 rounded-2xl border border-white/5 text-xs font-bold uppercase tracking-wider transition-all duration-200 text-gray-300 text-center cursor-pointer"
+            >
               Home
             </Link>
           </div>
@@ -297,7 +300,7 @@ export default function DashboardPage() {
                 <button
                   key={log.id} 
                   onClick={() => openModal(log)}
-                  className="w-full text-left py-4 px-4 sm:px-6 rounded-2xl bg-black/20 hover:bg-white/[0.03] border border-white/[0.02] hover:border-white/[0.08] flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 text-sm transition-all duration-200 ease-out group focus:outline-none hover:translate-x-0.5 active:scale-[0.995]"
+                  className="w-full text-left py-4 px-4 sm:px-6 rounded-2xl bg-black/20 hover:bg-white/[0.03] border border-white/[0.02] hover:border-white/[0.08] flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 text-sm transition-all duration-200 ease-out group focus:outline-none hover:translate-x-0.5 active:scale-[0.995] cursor-pointer"
                 >
                   {/* LEFT SIDE: CLINICAL DETAILS */}
                   <div className="space-y-1 min-w-0 flex-1">
@@ -446,7 +449,7 @@ export default function DashboardPage() {
 
             <button 
               onClick={closeModal}
-              className="w-full mt-4 bg-white/5 hover:bg-white/10 active:scale-[0.985] border border-white/5 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-150 text-gray-300 flex items-center justify-center shadow-md"
+              className="w-full mt-4 bg-white/5 hover:bg-white/10 active:scale-[0.985] border border-white/5 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-150 text-gray-300 flex items-center justify-center shadow-md cursor-pointer"
             >
               Close Record Review
             </button>
