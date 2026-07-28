@@ -6,6 +6,7 @@ import type { Patient } from "../data/patientGenerator";
 import { generatePatient } from "../data/patientGenerator";
 import { buildPatientPrompt } from "../data/patientPromptBuilder";
 import { diseaseLibrary } from "../data/diseaseLibrary";
+import VoiceCallModal from "../components/VoiceCallModal";
 
 export const patientAvatars = {
   male: {
@@ -92,13 +93,14 @@ export default function LabsPage() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerActive, setTimerActive] = useState<boolean>(false);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [isCallActive, setIsCallActive] = useState<boolean>(false);
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     admitPatient();
   }, []);
-
-  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messages.length > 0 && chatContainerRef.current) {
@@ -145,9 +147,55 @@ export default function LabsPage() {
     setPerformedExams({});
     setIsResponding(false);
     setIsGrading(false);
+    setIsCallActive(false);
     setTimeLeft(300); 
     setTimerActive(false);
     setHasStarted(false);
+  }
+
+  async function handleVoiceMessage(userText: string): Promise<string> {
+    if (!patient || !userText.trim()) return "";
+
+    const newUserMessage = {
+      id: Date.now(),
+      role: "user" as const,
+      text: userText.trim(),
+    };
+
+    const updatedHistoryForAPI = [newUserMessage, ...messages];
+    setMessages((prev) => [newUserMessage, ...prev]);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userText.trim(),
+          context: {
+            patient,
+            disease: patient.disease
+          },
+          history: updatedHistoryForAPI
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data && data.reply) {
+        setMessages((prev) => [
+          {
+            id: Date.now() + 1,
+            role: "assistant",
+            text: data.reply,
+            isNewAI: true,
+          },
+          ...prev,
+        ]);
+        return data.reply;
+      }
+    } catch (err) {
+      console.error("Voice chat API error:", err);
+    }
+    return "";
   }
 
   async function askQuestion() {
@@ -171,13 +219,13 @@ export default function LabsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-  message: currentQuestion,
-  context: {
-    patient,
-    disease: patient.disease
-  },
-  history: updatedHistoryForAPI
-})
+          message: currentQuestion,
+          context: {
+            patient,
+            disease: patient.disease
+          },
+          history: updatedHistoryForAPI
+        })
       });
 
       const data = await res.json();    
@@ -195,12 +243,12 @@ export default function LabsPage() {
     } catch (err) {
       console.error(err);
     } finally {
-  setIsResponding(false);
+      setIsResponding(false);
 
-  requestAnimationFrame(() => {
-    textareaRef.current?.focus();
-  });
-}
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+      });
+    }
   }
 
   function runPhysicalExam(type: "vitals" | "heent" | "chest" | "abdomen" | "neuro") {
@@ -287,28 +335,18 @@ export default function LabsPage() {
         correctDiagnosis: patient.disease.hidden.diagnosis,
         finalScore: totalScore,
         category: patient.disease.category,
- specialty: patient.disease.medicalSpecialty,
- severity: patient.disease.hidden.severity,
-    
-    difficulty:
-patient.disease.hidden.severity === "Critical"
-? "Expert"
-:
-patient.disease.hidden.severity === "Severe"
-? "Hard"
-:
-patient.disease.hidden.severity === "Moderate"
-? "Moderate"
-:
-"Easy",
-
-
-learningPoints: patient.learningPoints,
-redFlags: patient.disease.hidden.redFlags,
-
-
-
-
+        specialty: patient.disease.medicalSpecialty,
+        severity: patient.disease.hidden.severity,
+        difficulty:
+          patient.disease.hidden.severity === "Critical"
+            ? "Expert"
+            : patient.disease.hidden.severity === "Severe"
+            ? "Hard"
+            : patient.disease.hidden.severity === "Moderate"
+            ? "Moderate"
+            : "Easy",
+        learningPoints: patient.learningPoints,
+        redFlags: patient.disease.hidden.redFlags,
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([newLog, ...currentLogs]));
@@ -335,28 +373,18 @@ redFlags: patient.disease.hidden.redFlags,
         correctDiagnosis: patient.disease.hidden.diagnosis,
         finalScore: totalScore,
         category: patient.disease.category,
- specialty: patient.disease.medicalSpecialty,
- severity: patient.disease.hidden.severity,
- 
-    difficulty:
-patient.disease.hidden.severity === "Critical"
-? "Expert"
-:
-patient.disease.hidden.severity === "Severe"
-? "Hard"
-:
-patient.disease.hidden.severity === "Moderate"
-? "Moderate"
-:
-"Easy",
-
-
-learningPoints: patient.learningPoints,
-redFlags: patient.disease.hidden.redFlags,
-
-
-
-  
+        specialty: patient.disease.medicalSpecialty,
+        severity: patient.disease.hidden.severity,
+        difficulty:
+          patient.disease.hidden.severity === "Critical"
+            ? "Expert"
+            : patient.disease.hidden.severity === "Severe"
+            ? "Hard"
+            : patient.disease.hidden.severity === "Moderate"
+            ? "Moderate"
+            : "Easy",
+        learningPoints: patient.learningPoints,
+        redFlags: patient.disease.hidden.redFlags,
         timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
       };
       localStorage.setItem("medsim_shift_logs", JSON.stringify([fallbackLog, ...currentLogs]));
@@ -384,9 +412,23 @@ redFlags: patient.disease.hidden.redFlags,
                 </h1>
                 <p className="text-xs text-slate-400 mt-0.5">OSCE Clinical Evaluation Station</p>
               </div>
-              <Link href="/dashboard" className="cursor-pointer text-xs font-semibold text-slate-200 bg-slate-800/60 hover:bg-slate-700/80 hover:text-white px-4 py-2 rounded-xl border border-slate-700/60 shadow-md transition-all active:scale-98">
-                📊 Dashboard
-              </Link>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsCallActive(true)}
+                  disabled={!hasStarted || isSessionEnded}
+                  className="cursor-pointer text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed px-3.5 py-2 rounded-xl border border-indigo-500/50 shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.826-1.47-5.11-3.754-6.58-6.58l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                  </svg>
+                  <span>Start Patient Call</span>
+                </button>
+
+                <Link href="/dashboard" className="cursor-pointer text-xs font-semibold text-slate-200 bg-slate-800/60 hover:bg-slate-700/80 hover:text-white px-4 py-2 rounded-xl border border-slate-700/60 shadow-md transition-all active:scale-98">
+                  📊 Dashboard
+                </Link>
+              </div>
             </div>
 
             <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950/80 border border-slate-800/80 flex items-center gap-5 group hover:border-indigo-500/30 transition-all shadow-lg">
@@ -471,7 +513,8 @@ redFlags: patient.disease.hidden.redFlags,
             </div>
 
             <div className="relative flex items-center">
-              <textarea   ref={textareaRef}
+              <textarea   
+                ref={textareaRef}
                 value={question}
                 onChange={(e) => {
                   setQuestion(e.target.value);
@@ -496,9 +539,9 @@ redFlags: patient.disease.hidden.redFlags,
                 onClick={() => {
                   askQuestion();
                   if (textareaRef.current) {
-  textareaRef.current.style.height = "auto";
-  textareaRef.current.focus();
-}
+                    textareaRef.current.style.height = "auto";
+                    textareaRef.current.focus();
+                  }
                 }}
                 disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
                 className="cursor-pointer absolute right-2.5 p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white transition-all active:scale-95 shadow-md"
@@ -726,6 +769,14 @@ redFlags: patient.disease.hidden.redFlags,
         </div>
 
       </div>
+
+      {/* Voice Call Modal Integration */}
+      <VoiceCallModal
+        patient={patient}
+        isOpen={isCallActive}
+        onClose={() => setIsCallActive(false)}
+        onSendMessage={handleVoiceMessage}
+      />
     </main>
   );
 }
