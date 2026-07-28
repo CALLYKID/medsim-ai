@@ -92,6 +92,7 @@ export default function LabsPage() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerActive, setTimerActive] = useState<boolean>(false);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     admitPatient();
@@ -194,8 +195,12 @@ export default function LabsPage() {
     } catch (err) {
       console.error(err);
     } finally {
-      setIsResponding(false);
-    }
+  setIsResponding(false);
+
+  requestAnimationFrame(() => {
+    textareaRef.current?.focus();
+  });
+}
   }
 
   function runPhysicalExam(type: "vitals" | "heent" | "chest" | "abdomen" | "neuro") {
@@ -466,7 +471,7 @@ redFlags: patient.disease.hidden.redFlags,
             </div>
 
             <div className="relative flex items-center">
-              <textarea
+              <textarea   ref={textareaRef}
                 value={question}
                 onChange={(e) => {
                   setQuestion(e.target.value);
@@ -490,8 +495,10 @@ redFlags: patient.disease.hidden.redFlags,
               <button
                 onClick={() => {
                   askQuestion();
-                  const txt = document.querySelector("textarea");
-                  if (txt) txt.style.height = "auto";
+                  if (textareaRef.current) {
+  textareaRef.current.style.height = "auto";
+  textareaRef.current.focus();
+}
                 }}
                 disabled={!hasStarted || !question.trim() || isResponding || isGrading || isSessionEnded}
                 className="cursor-pointer absolute right-2.5 p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white transition-all active:scale-95 shadow-md"
