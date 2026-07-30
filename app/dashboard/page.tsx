@@ -162,11 +162,57 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* HIGH-END DESKTOP GRID FOR ALL ANALYTICAL MODULES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          {/* CLINICAL EXPOSURE CATEGORY BREAKDOWN */}
-          {shiftHistory.length > 0 && (
+        {/* CONDITIONAL RENDER: IDLE STATE VS ACTIVE ANALYTICAL MODULES GRID */}
+        {shiftHistory.length === 0 ? (
+          /* RICH IDLE COMMAND CENTER STATE */
+          <div className="rounded-3xl bg-gradient-to-b from-[#0f1626]/80 to-[#090d16]/90 backdrop-blur-md border border-white/5 p-8 sm:p-14 shadow-2xl text-center relative overflow-hidden space-y-6">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-600/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-xl shadow-indigo-600/10">
+              <svg className="w-8 h-8 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+
+            <div className="max-w-md mx-auto space-y-2">
+              <h2 className="text-xl sm:text-2xl font-black text-white">Your Command Center is Ready</h2>
+              <p className="text-xs sm:text-sm text-gray-400 leading-relaxed font-medium">
+                No telemetry data has been recorded on this shift yet. Once you complete patient consultations, diagnostic feedback, scoring matrices, and clinical learning insights will automatically populate here.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-4 text-left">
+              <div className="p-4 rounded-2xl bg-black/30 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider">Step 1</span>
+                <p className="text-xs font-bold text-gray-200">Launch Clinical Lab</p>
+                <p className="text-[11px] text-gray-500">Pick a case and review patient background files.</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-black/30 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider">Step 2</span>
+                <p className="text-xs font-bold text-gray-200">Interrogate & Examine</p>
+                <p className="text-[11px] text-gray-500">Use text or real-time voice calls and order physical exams.</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-black/30 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">Step 3</span>
+                <p className="text-xs font-bold text-gray-200">Get Graded Feedback</p>
+                <p className="text-[11px] text-gray-500">Review detailed breakdown scores and learning points here.</p>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                href="/labs"
+                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-wider text-white transition-all duration-200 shadow-xl shadow-indigo-600/25 border border-indigo-400/20 cursor-pointer"
+              >
+                <span>Start Your First Consultation &rarr;</span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          /* HIGH-END DESKTOP GRID FOR ALL ANALYTICAL MODULES */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            {/* CLINICAL EXPOSURE CATEGORY BREAKDOWN */}
             <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-5">
@@ -197,89 +243,89 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          )}
-          
-          {/* SEVERITY DISTRIBUTION */}
-          <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl flex flex-col justify-between">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
-                Patient Acuity Profile
-              </h2>
-              <div className="grid grid-cols-2 gap-3.5">
-                {Object.entries(severityStats).map(([severity, count]) => (
-                  <div key={severity} className="bg-black/25 border border-white/5 rounded-2xl p-4 flex flex-col justify-between">
-                    <p className="text-xs text-gray-400 truncate">{severity}</p>
-                    <p className="text-3xl font-black text-white mt-2 font-mono">{count}</p>
-                  </div>
-                ))}
+            
+            {/* SEVERITY DISTRIBUTION */}
+            <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl flex flex-col justify-between">
+              <div>
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
+                  Patient Acuity Profile
+                </h2>
+                <div className="grid grid-cols-2 gap-3.5">
+                  {Object.entries(severityStats).map(([severity, count]) => (
+                    <div key={severity} className="bg-black/25 border border-white/5 rounded-2xl p-4 flex flex-col justify-between">
+                      <p className="text-xs text-gray-400 truncate">{severity}</p>
+                      <p className="text-3xl font-black text-white mt-2 font-mono">{count}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* CASE DIFFICULTY PROFILE */}
-          <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl flex flex-col justify-between">
-            <div>
+            {/* CASE DIFFICULTY PROFILE */}
+            <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl flex flex-col justify-between">
+              <div>
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
+                  Case Difficulty Profile
+                </h2>
+                <div className="grid grid-cols-2 gap-3.5">
+                  {["Easy", "Moderate", "Hard", "Expert"].map(level => {
+                    const count = shiftHistory.filter(log => log.difficulty === level).length;
+                    return (
+                      <div key={level} className="bg-black/25 border border-white/5 rounded-2xl p-4 flex flex-col justify-between">
+                        <p className="text-xs text-gray-400">{level}</p>
+                        <p className="text-3xl font-black text-white mt-2 font-mono">{count}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* PERFORMANCE BY CATEGORY */}
+            <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl col-span-1 lg:col-span-2">
               <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
-                Case Difficulty Profile
+                Diagnostic Performance Matrix
               </h2>
-              <div className="grid grid-cols-2 gap-3.5">
-                {["Easy", "Moderate", "Hard", "Expert"].map(level => {
-                  const count = shiftHistory.filter(log => log.difficulty === level).length;
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {Object.entries(categoryPerformance).map(([category, data]) => {
+                  const average = Math.round(data.score / data.total);
                   return (
-                    <div key={level} className="bg-black/25 border border-white/5 rounded-2xl p-4 flex flex-col justify-between">
-                      <p className="text-xs text-gray-400">{level}</p>
-                      <p className="text-3xl font-black text-white mt-2 font-mono">{count}</p>
+                    <div key={category} className="bg-black/25 p-4 rounded-2xl border border-white/5">
+                      <div className="flex justify-between text-xs mb-2">
+                        <span className="text-gray-300 font-medium truncate max-w-[200px]">{category}</span>
+                        <span className={average >= 70 ? "text-emerald-400 font-mono font-bold" : "text-amber-400 font-mono font-bold"}>
+                          {average}%
+                        </span>
+                      </div>
+                      <div className="h-2.5 bg-black/40 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-indigo-500 rounded-full"
+                          style={{ width: `${average}%` }}
+                        />
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
-          </div>
 
-          {/* PERFORMANCE BY CATEGORY */}
-          <div className="rounded-3xl bg-[#0f1626]/60 backdrop-blur-md border border-white/5 p-6 shadow-xl col-span-1 lg:col-span-2">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
-              Diagnostic Performance Matrix
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {Object.entries(categoryPerformance).map(([category, data]) => {
-                const average = Math.round(data.score / data.total);
-                return (
-                  <div key={category} className="bg-black/25 p-4 rounded-2xl border border-white/5">
-                    <div className="flex justify-between text-xs mb-2">
-                      <span className="text-gray-300 font-medium truncate max-w-[200px]">{category}</span>
-                      <span className={average >= 70 ? "text-emerald-400 font-mono font-bold" : "text-amber-400 font-mono font-bold"}>
-                        {average}%
-                      </span>
-                    </div>
-                    <div className="h-2.5 bg-black/40 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-indigo-500 rounded-full"
-                        style={{ width: `${average}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* AI WEAKNESS DETECTOR */}
-          {weakestArea && (
-            <div className="rounded-3xl bg-gradient-to-r from-indigo-950/40 via-purple-950/40 to-indigo-950/40 border border-indigo-500/20 p-6 shadow-xl flex flex-col justify-between">
-              <div>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-3">
-                  Clinical Performance Insight
-                </h2>
-                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                  Your current simulation history shows the lowest average score in{" "}
-                  <span className="text-indigo-400 font-bold">{weakestArea[0]}</span>. This is based only on completed cases and may change as more simulations are recorded.
-                </p>
+            {/* AI WEAKNESS DETECTOR */}
+            {weakestArea && (
+              <div className="rounded-3xl bg-gradient-to-r from-indigo-950/40 via-purple-950/40 to-indigo-950/40 border border-indigo-500/20 p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-300 mb-3">
+                    Clinical Performance Insight
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                    Your current simulation history shows the lowest average score in{" "}
+                    <span className="text-indigo-400 font-bold">{weakestArea[0]}</span>. This is based only on completed cases and may change as more simulations are recorded.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-        </div>
+          </div>
+        )}
 
         {/* HISTORICAL CLINICAL LOG TABLE */}
         <div className="rounded-3xl bg-[#0f1626]/50 backdrop-blur-md border border-white/5 shadow-2xl p-6 sm:p-8 overflow-hidden">
@@ -291,8 +337,8 @@ export default function DashboardPage() {
           </div>
           
           {shiftHistory.length === 0 ? (
-            <div className="text-center py-16 sm:py-24 border border-dashed border-white/5 rounded-3xl bg-black/10 px-4">
-              <p className="text-xs text-gray-500 font-medium max-w-sm mx-auto">No telemetry data recorded. Launch an intake session above to initiate your clinical trial log.</p>
+            <div className="text-center py-12 border border-dashed border-white/5 rounded-3xl bg-black/10 px-4">
+              <p className="text-xs text-gray-400 font-medium">No consultations logged yet. Your completed exam archives will appear here.</p>
             </div>
           ) : (
             <div className="divide-y divide-white/5 max-h-[440px] overflow-y-auto pr-2 space-y-3 pt-1 scrollbar-thin scrollbar-thumb-slate-800">
@@ -459,3 +505,4 @@ export default function DashboardPage() {
     </main>
   );
 }
+
