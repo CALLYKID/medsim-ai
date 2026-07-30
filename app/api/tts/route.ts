@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Disable bufferutil native build check for ws in Termux/bundlers
 process.env.WS_NO_BUFFER_UTIL = "1";
 
 // @ts-ignore
@@ -29,16 +28,17 @@ export async function POST(req: NextRequest) {
     const audioBuffer = Buffer.concat(chunks);
 
     return new NextResponse(audioBuffer, {
+      status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Length": audioBuffer.length.toString(),
-        "Cache-Control": "no-cache",
+        "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch (error: any) {
     console.error("Edge TTS Generation Error:", error);
     return NextResponse.json(
-      { error: "Failed to synthesize voice using Edge TTS", details: error.message },
+      { error: "Failed to synthesize voice using Edge TTS", details: error?.message || error },
       { status: 500 }
     );
   }

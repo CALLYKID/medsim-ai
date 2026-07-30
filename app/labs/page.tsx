@@ -6,7 +6,7 @@ import type { Patient } from "../data/patientGenerator";
 import { generatePatient } from "../data/patientGenerator";
 import { buildPatientPrompt } from "../data/patientPromptBuilder";
 import { diseaseLibrary } from "../data/diseaseLibrary";
-import VoiceCallModal from "../components/VoiceCallModal";
+import VoiceCallModal from "../components//VoiceCallModal";
 
 export const patientAvatars = {
   male: {
@@ -422,7 +422,7 @@ export default function LabsPage() {
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.826-1.47-5.11-3.754-6.58-6.58l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
                   </svg>
-                  <span>Start Patient Call</span>
+                  <span>Call Patient</span>
                 </button>
 
                 <Link href="/dashboard" className="cursor-pointer text-xs font-semibold text-slate-200 bg-slate-800/60 hover:bg-slate-700/80 hover:text-white px-4 py-2 rounded-xl border border-slate-700/60 shadow-md transition-all active:scale-98">
@@ -771,12 +771,12 @@ export default function LabsPage() {
       </div>
 
       {/* Voice Call Modal Integration */}
-      <VoiceCallModal
-        patient={patient}
-        isOpen={isCallActive}
-        onClose={() => setIsCallActive(false)}
-        onSendMessage={handleVoiceMessage}
-      />
+     <VoiceCallModal
+  patient={patient}
+  isOpen={isCallActive}
+  onClose={() => setIsCallActive(false)}
+  onSendMessage={handleVoiceMessage}
+/>
     </main>
   );
 }
