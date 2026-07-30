@@ -34,17 +34,19 @@ interface VoiceCallModalProps {
   onSendMessage: (text: string) => Promise<string | void>;
 }
 
+type CallState = "CONNECTING" | "CONNECTED" | "LISTENING" | "PROCESSING" | "SPEAKING" | "DISCONNECTING";
+
 export default function VoiceCallModal({
   patient,
   isOpen,
   onClose,
   onSendMessage,
 }: VoiceCallModalProps) {
+  // Call State Engine
+  const [callState, setCallState] = useState<CallState>("CONNECTING");
   const [isMuted, setIsMuted] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isListening, setIsListening] = useState(false);
+  const [isSpeakerOn, setIsSpeakerOn] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
-  const [statusText, setStatusText] = useState("CONNECTED");
   const [lastTranscript, setLastTranscript] = useState<string>("");
 
   const recognitionRef = useRef<any>(null);
@@ -87,7 +89,7 @@ export default function VoiceCallModal({
         const barHeight = Math.max(4, (value / 255) * canvas.height * 0.8);
 
         const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-        if (isSpeaking) {
+        if (callState === "SPEAKING") {
           gradient.addColorStop(0, "rgba(99, 102, 241, 0.2)");
           gradient.addColorStop(0.5, "rgba(129, 140, 248, 0.8)");
           gradient.addColorStop(1, "rgba(199, 210, 254, 1)");
@@ -107,9 +109,9 @@ export default function VoiceCallModal({
     };
 
     render();
-  }, [isSpeaking]);
+  }, [callState]);
 
-  // Stop ONLY Audio Playback
+  // Stop Audio Playback
   const stopAudio = useCallback(() => {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
@@ -122,10 +124,9 @@ export default function VoiceCallModal({
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
-    setIsSpeaking(false);
   }, []);
 
-  // Complete voice & audio teardown
+  // Teardown voice recognition & audio
   const stopVoice = useCallback(() => {
     stopAudio();
     if (recognitionRef.current) {
@@ -135,15 +136,24 @@ export default function VoiceCallModal({
         // Safe catch
       }
     }
-    setIsListening(false);
   }, [stopAudio]);
+
+  // Handle End Call Sequence
+  const handleEndCall = useCallback(() => {
+    setCallState("DISCONNECTING");
+    stopVoice();
+
+    // Smooth teardown delay to give actual ending feedback
+    setTimeout(() => {
+      onClose();
+    }, 800);
+  }, [stopVoice, onClose]);
 
   // Speak Patient TTS Response with Web Audio Analyser
   const speakPatientResponse = useCallback(
     async (text: string) => {
       stopAudio();
-      setIsSpeaking(true);
-      setStatusText(`${patient.name.split(" ")[0].toUpperCase()} IS SPEAKING...`);
+      setCallState("SPEAKING");
 
       let voice = "en-GB-SoniaNeural";
       if (patient.gender?.toLowerCase() === "male") {
@@ -166,6 +176,9 @@ export default function VoiceCallModal({
         const audio = new Audio(audioUrl);
         currentAudioRef.current = audio;
 
+        // Apply audio volume based on speaker state toggle
+        audio.volume = isSpeakerOn ? 1.0 : 0.4;
+
         const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioCtx) {
           if (!audioContextRef.current) {
@@ -187,14 +200,12 @@ export default function VoiceCallModal({
         }
 
         audio.onended = () => {
-          setIsSpeaking(false);
-          setStatusText("CONNECTED");
+          setCallState("CONNECTED");
           URL.revokeObjectURL(audioUrl);
         };
 
         audio.onerror = () => {
-          setIsSpeaking(false);
-          setStatusText("CONNECTED");
+          setCallState("CONNECTED");
         };
 
         await audio.play();
@@ -202,21 +213,18 @@ export default function VoiceCallModal({
         if (typeof window !== "undefined" && "speechSynthesis" in window) {
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.onend = () => {
-            setIsSpeaking(false);
-            setStatusText("CONNECTED");
+            setCallState("CONNECTED");
           };
           utterance.onerror = () => {
-            setIsSpeaking(false);
-            setStatusText("CONNECTED");
+            setCallState("CONNECTED");
           };
           window.speechSynthesis.speak(utterance);
         } else {
-          setIsSpeaking(false);
-          setStatusText("CONNECTED");
+          setCallState("CONNECTED");
         }
       }
     },
-    [patient, stopAudio, drawVisualizer]
+    [patient, stopAudio, drawVisualizer, isSpeakerOn]
   );
 
   const speakResponseRef = useRef(speakPatientResponse);
@@ -224,7 +232,14 @@ export default function VoiceCallModal({
     speakResponseRef.current = speakPatientResponse;
   }, [speakPatientResponse]);
 
-  // Lock background scrolling while call is active
+  // Adjust volume dynamically if user toggles Speaker mode during call
+  useEffect(() => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.volume = isSpeakerOn ? 1.0 : 0.4;
+    }
+  }, [isSpeakerOn]);
+
+  // Lock background scrolling while modal is active
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -236,7 +251,7 @@ export default function VoiceCallModal({
     };
   }, [isOpen]);
 
-  // Initialize Speech Recognition
+  // Initialize Speech Recognition & Call Lifecycle
   useEffect(() => {
     if (!isOpen) {
       stopVoice();
@@ -245,7 +260,17 @@ export default function VoiceCallModal({
 
     setCallDuration(0);
     setLastTranscript("");
-    const timer = setInterval(() => setCallDuration((prev) => prev + 1), 1000);
+    setIsMuted(false);
+    setCallState("CONNECTING");
+
+    // Establish Call Connection simulation
+    const connectTimer = setTimeout(() => {
+      setCallState("CONNECTED");
+    }, 1200);
+
+    const durationTimer = setInterval(() => {
+      setCallDuration((prev) => prev + 1);
+    }, 1000);
 
     if (typeof window !== "undefined") {
       const SpeechRecognition =
@@ -258,8 +283,7 @@ export default function VoiceCallModal({
         recognition.lang = "en-US";
 
         recognition.onstart = () => {
-          setIsListening(true);
-          setStatusText("LISTENING...");
+          setCallState("LISTENING");
         };
 
         recognition.onresult = async (event: any) => {
@@ -270,42 +294,56 @@ export default function VoiceCallModal({
           setLastTranscript(transcript);
 
           if (event.results[0].isFinal) {
-            setIsListening(false);
-            setStatusText("PROCESSING...");
+            setCallState("PROCESSING");
             const reply = await onSendMessageRef.current(transcript);
             if (reply) {
               speakResponseRef.current(reply);
             } else {
-              setStatusText("CONNECTED");
+              setCallState("CONNECTED");
             }
           }
         };
 
         recognition.onerror = (event: any) => {
           if (event.error === "aborted") {
-            setIsListening(false);
+            setCallState("CONNECTED");
             return;
           }
           console.error("Speech Recognition Error:", event.error);
-          setIsListening(false);
-          setStatusText("CONNECTED");
+          setCallState("CONNECTED");
         };
 
         recognition.onend = () => {
-          setIsListening(false);
+          if (callState === "LISTENING") {
+            setCallState("CONNECTED");
+          }
         };
 
         recognitionRef.current = recognition;
-      } else {
-        setStatusText("UNSUPPORTED BROWSER");
       }
     }
 
     return () => {
-      clearInterval(timer);
+      clearTimeout(connectTimer);
+      clearInterval(durationTimer);
       stopVoice();
     };
   }, [isOpen, stopVoice]);
+
+  // Handle Mute Action
+  const toggleMute = () => {
+    const nextMuteState = !isMuted;
+    setIsMuted(nextMuteState);
+
+    if (nextMuteState && callState === "LISTENING") {
+      try {
+        recognitionRef.current?.stop();
+      } catch (e) {
+        // Safe catch
+      }
+      setCallState("CONNECTED");
+    }
+  };
 
   const formatDuration = (secs: number) => {
     const mins = Math.floor(secs / 60);
@@ -314,13 +352,16 @@ export default function VoiceCallModal({
   };
 
   const togglePushToTalk = () => {
-    if (isListening) {
+    if (callState === "DISCONNECTING" || isMuted) return;
+
+    if (callState === "LISTENING") {
       try {
         recognitionRef.current?.stop();
       } catch (e) {
         // Safe catch
       }
-    } else if (recognitionRef.current && !isMuted) {
+      setCallState("CONNECTED");
+    } else if (recognitionRef.current) {
       stopAudio();
       try {
         recognitionRef.current.start();
@@ -330,45 +371,68 @@ export default function VoiceCallModal({
     }
   };
 
+  // Helper status text formatter based on active Call State Engine
+  const getDisplayStatus = () => {
+    if (isMuted) return "MICROPHONE MUTED";
+    switch (callState) {
+      case "CONNECTING":
+        return "INITIALIZING LINK...";
+      case "LISTENING":
+        return "LISTENING...";
+      case "PROCESSING":
+        return "PROCESSING RESPONSE...";
+      case "SPEAKING":
+        return `${patient.name.split(" ")[0].toUpperCase()} IS SPEAKING...`;
+      case "DISCONNECTING":
+        return "DISCONNECTING CALL...";
+      default:
+        return "ENCRYPTED CALL CONNECTED";
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 h-screen w-screen z-[9999] flex items-center justify-center p-4 md:p-6 bg-[#030712] select-none overflow-hidden">
       
-      {/* Background Lighting Meshes */}
+      {/* Dynamic Background Lighting Meshes */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[140px] opacity-35 transition-all duration-1000 ${
-            isSpeaking
+            callState === "SPEAKING"
               ? "bg-indigo-600 scale-125"
-              : isListening
+              : callState === "LISTENING"
               ? "bg-emerald-500 scale-110"
+              : callState === "DISCONNECTING"
+              ? "bg-rose-600 scale-125 opacity-45"
               : "bg-blue-600/40 scale-90"
           }`}
         />
         <div
           className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full blur-[90px] opacity-25 transition-all duration-1000 ${
-            isSpeaking ? "bg-cyan-400" : isListening ? "bg-teal-300" : "bg-indigo-500/20"
+            callState === "SPEAKING" ? "bg-cyan-400" : callState === "LISTENING" ? "bg-teal-300" : "bg-indigo-500/20"
           }`}
         />
       </div>
 
       {/* Main Container Card */}
-      <div className="w-full max-w-lg rounded-[2.5rem] bg-[#090d16]/80 border border-slate-800/80 p-8 flex flex-col items-center justify-between min-h-[580px] shadow-[0_0_80px_rgba(0,0,0,0.95)] relative overflow-hidden backdrop-blur-2xl backdrop-saturate-200">
+      <div className="w-full max-w-lg rounded-[2.5rem] bg-[#090d16]/85 border border-slate-800/80 p-8 flex flex-col items-center justify-between min-h-[590px] shadow-[0_0_80px_rgba(0,0,0,0.95)] relative overflow-hidden backdrop-blur-2xl backdrop-saturate-200">
         
-        {/* Top Header Controls */}
+        {/* Top Header Status Pills */}
         <div className="w-full flex justify-between items-center text-[11px] font-mono tracking-wider text-slate-400 z-10">
           <div className="flex items-center gap-2.5 bg-slate-950/80 px-4 py-2 rounded-full border border-slate-800/80 shadow-inner">
             <span
               className={`h-2 w-2 rounded-full transition-colors duration-300 ${
-                isSpeaking
+                callState === "DISCONNECTING"
+                  ? "bg-rose-500"
+                  : callState === "SPEAKING"
                   ? "bg-indigo-400 animate-pulse"
-                  : isListening
+                  : callState === "LISTENING"
                   ? "bg-emerald-400 animate-ping"
                   : "bg-emerald-500"
               }`}
             />
-            <span className="text-slate-300 font-semibold tracking-widest">CALL PANEL</span>
+            <span className="text-slate-300 font-semibold tracking-widest">PATIENT CALL SESSION</span>
           </div>
 
           <div className="bg-slate-950/80 px-4 py-2 rounded-full border border-slate-800/80 text-slate-300 font-bold tracking-widest shadow-inner">
@@ -376,15 +440,19 @@ export default function VoiceCallModal({
           </div>
         </div>
 
-        {/* Patient Profile Avatar & Visualizer */}
+        {/* Patient Profile Avatar & Spectrum Renderer */}
         <div className="flex flex-col items-center my-auto space-y-6 relative z-10 w-full">
           <div className="relative flex items-center justify-center">
+            
+            {/* Dynamic Halo Glow Ring */}
             <div
               className={`absolute -inset-5 rounded-full blur-md opacity-40 transition-all duration-500 ${
-                isSpeaking
+                callState === "SPEAKING"
                   ? "bg-gradient-to-tr from-indigo-500 to-cyan-400 animate-pulse"
-                  : isListening
+                  : callState === "LISTENING"
                   ? "bg-gradient-to-tr from-emerald-400 to-teal-200 animate-pulse"
+                  : callState === "DISCONNECTING"
+                  ? "bg-rose-500/50"
                   : "bg-transparent"
               }`}
             />
@@ -393,23 +461,30 @@ export default function VoiceCallModal({
               <img
                 src={getPatientAvatar(patient.gender, patient.age)}
                 alt={patient.name}
-                className="w-full h-full object-cover rounded-full filter brightness-105"
+                className={`w-full h-full object-cover rounded-full filter transition-all duration-500 ${
+                  callState === "DISCONNECTING" ? "brightness-50 grayscale" : "brightness-105"
+                }`}
               />
             </div>
           </div>
 
+          {/* Patient Details & Dynamic Engine Status */}
           <div className="text-center space-y-1.5">
             <h3 className="text-2xl font-black text-white tracking-tight">{patient.name}</h3>
-            <p className="text-[11px] font-mono tracking-[0.2em] font-semibold text-indigo-400/90">
-              {statusText}
+            <p className={`text-[11px] font-mono tracking-[0.2em] font-semibold transition-colors duration-300 ${
+              isMuted ? "text-amber-400" : callState === "DISCONNECTING" ? "text-rose-400" : "text-indigo-400/90"
+            }`}>
+              {getDisplayStatus()}
             </p>
           </div>
 
+          {/* Real-time Spectrum Visualizer Canvas */}
           <div className="h-10 w-full flex items-center justify-center pt-1">
             <canvas ref={canvasRef} width={240} height={40} className="w-[240px] h-[40px]" />
           </div>
 
-          {lastTranscript && (
+          {/* Subtitle Transcripts Box */}
+          {lastTranscript && callState !== "DISCONNECTING" && (
             <div className="w-full px-4 animate-[fadeIn_0.3s_ease-out]">
               <div className="bg-slate-950/70 border border-slate-800/90 rounded-2xl p-3.5 text-xs text-slate-200 text-center font-sans tracking-wide leading-relaxed shadow-lg backdrop-blur-md">
                 "{lastTranscript}"
@@ -418,18 +493,19 @@ export default function VoiceCallModal({
           )}
         </div>
 
-        {/* Flagship Controls Bar */}
-        <div className="w-full flex items-center justify-center gap-6 pt-6 border-t border-slate-800/60 z-10">
+        {/* Dynamic Hardware Controls Suite */}
+        <div className="w-full flex items-center justify-center gap-5 pt-6 border-t border-slate-800/60 z-10">
           
           {/* Mute Button */}
           <button
-            onClick={() => setIsMuted(!isMuted)}
+            onClick={toggleMute}
+            disabled={callState === "DISCONNECTING"}
             title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
             className={`group relative p-4 rounded-full border transition-all duration-300 ease-out active:scale-90 ${
               isMuted
-                ? "bg-rose-500/15 border-rose-500/40 text-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:border-rose-400"
+                ? "bg-amber-500/20 border-amber-500/50 text-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.3)] hover:border-amber-400"
                 : "bg-slate-950/80 border-slate-800/90 text-slate-400 hover:text-slate-100 hover:border-slate-600 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-            }`}
+            } disabled:opacity-30 disabled:cursor-not-allowed`}
           >
             <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
             
@@ -442,9 +518,31 @@ export default function VoiceCallModal({
             </svg>
           </button>
 
-          {/* Hero Push-to-Talk Button */}
+          {/* Speaker Audio Mode Toggle */}
+          <button
+            onClick={() => setIsSpeakerOn(!isSpeakerOn)}
+            disabled={callState === "DISCONNECTING"}
+            title={isSpeakerOn ? "Switch to Earpiece Mode" : "Switch to Speaker Mode"}
+            className={`group relative p-4 rounded-full border transition-all duration-300 ease-out active:scale-90 ${
+              isSpeakerOn
+                ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:border-indigo-400"
+                : "bg-slate-950/80 border-slate-800/90 text-slate-400 hover:text-slate-100 hover:border-slate-600"
+            } disabled:opacity-30 disabled:cursor-not-allowed`}
+          >
+            <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-6 h-6 transition-transform duration-300 group-hover:scale-110">
+              {isSpeakerOn ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.287a6 6 0 0 1 0 7.427M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.41 0-.75-.34-.75-.75V9.75c0-.41.34-.75.75-.75h4.49Z" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.41 0-.75-.34-.75-.75V9.75c0-.41.34-.75.75-.75h4.49Z" />
+              )}
+            </svg>
+          </button>
+
+          {/* Primary Push-to-Talk Mic Button */}
           <div className="relative flex items-center justify-center">
-            {isListening && (
+            {callState === "LISTENING" && (
               <>
                 <span className="absolute inset-0 rounded-full bg-emerald-400/30 animate-ping" />
                 <span className="absolute -inset-2 rounded-full bg-emerald-500/20 animate-pulse blur-sm" />
@@ -453,7 +551,7 @@ export default function VoiceCallModal({
 
             <span
               className={`absolute -inset-1.5 rounded-full blur-md transition-all duration-500 ${
-                isListening
+                callState === "LISTENING"
                   ? "bg-gradient-to-r from-emerald-400 to-teal-300 opacity-80"
                   : "bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 opacity-40 group-hover:opacity-75"
               }`}
@@ -461,10 +559,10 @@ export default function VoiceCallModal({
 
             <button
               onClick={togglePushToTalk}
-              disabled={isMuted}
-              title="Push to speak"
+              disabled={isMuted || callState === "DISCONNECTING" || callState === "SPEAKING"}
+              title={isMuted ? "Unmute microphone to speak" : "Push to speak"}
               className={`group relative p-6 rounded-full border transition-all duration-300 ease-out active:scale-95 ${
-                isListening
+                callState === "LISTENING"
                   ? "bg-emerald-500 border-emerald-200 text-slate-950 scale-105 shadow-[0_0_40px_rgba(16,185,129,0.6)]"
                   : "bg-indigo-600/90 border-indigo-400/80 text-white hover:bg-indigo-500 hover:border-indigo-300 shadow-[0_0_35px_rgba(79,70,229,0.5)]"
               } disabled:opacity-30 disabled:cursor-not-allowed`}
@@ -478,7 +576,7 @@ export default function VoiceCallModal({
                 strokeWidth={2}
                 stroke="currentColor"
                 className={`w-7 h-7 transition-all duration-300 ${
-                  isListening ? "scale-110 rotate-6" : "group-hover:scale-110"
+                  callState === "LISTENING" ? "scale-110 rotate-6" : "group-hover:scale-110"
                 }`}
               >
                 <path
@@ -490,14 +588,12 @@ export default function VoiceCallModal({
             </button>
           </div>
 
-          {/* End Call Button */}
+          {/* Authentic Red End Call Button */}
           <button
-            onClick={() => {
-              stopVoice();
-              onClose();
-            }}
+            onClick={handleEndCall}
+            disabled={callState === "DISCONNECTING"}
             title="End Call"
-            className="group relative p-4 rounded-full bg-rose-600/90 border border-rose-400/60 text-white transition-all duration-300 ease-out hover:bg-rose-500 hover:border-rose-300 active:scale-90 shadow-[0_0_25px_rgba(225,29,72,0.4)] hover:shadow-[0_0_35px_rgba(225,29,72,0.6)]"
+            className="group relative p-4 rounded-full bg-rose-600/90 border border-rose-400/60 text-white transition-all duration-300 ease-out hover:bg-rose-500 hover:border-rose-300 active:scale-90 shadow-[0_0_25px_rgba(225,29,72,0.4)] hover:shadow-[0_0_35px_rgba(225,29,72,0.6)] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <span className="absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
 
@@ -516,3 +612,4 @@ export default function VoiceCallModal({
     </div>
   );
 }
+

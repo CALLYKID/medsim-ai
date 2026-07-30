@@ -99,14 +99,14 @@ export default function LandingPage() {
             </a>
             
             <Link 
-  href="/about"
-  className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
-    after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
-    after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
-    after:transition-transform after:duration-300 after:ease-out"
->
-  About
-</Link>
+              href="/about"
+              className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
+                after:transition-transform after:duration-300 after:ease-out"
+            >
+              About
+            </Link>
 
             <Link 
               href="/dashboard" 
@@ -172,12 +172,12 @@ export default function LandingPage() {
               Performance Logs
             </Link>
             <Link 
-  href="/about"
-  onClick={() => setIsMobileMenuOpen(false)}
-  className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
->
-  About
-</Link>
+              href="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+            >
+              About
+            </Link>
             <Link 
               href="/labs" 
               onClick={() => setIsMobileMenuOpen(false)}
@@ -208,7 +208,7 @@ export default function LandingPage() {
               <p className="text-sm sm:text-base font-normal text-gray-200 tracking-wide text-center md:text-left leading-relaxed">
                 You are the medical examiner.{" "}
                 <span className="bg-gradient-to-r from-indigo-300 via-indigo-400 to-purple-400 bg-clip-text text-transparent font-bold">
-                  Interrogate the patient, perform diagnostic tasks, and rule the diagnosis.
+                  Interrogate the patient via text or real-time voice call, perform diagnostics, and submit final assessments.
                 </span>
               </p>
             </div>
@@ -219,7 +219,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-10 font-medium">
-            Bridge the gap between theoretical pathology and high-stakes diagnostic decision making. Train under a strict live-telemetry monitor mimicking actual UK diagnostic evaluation arrays.
+            Bridge the gap between theoretical pathology and high-stakes diagnostic decision making. Train under a strict live-telemetry monitor mimicking actual UK diagnostic evaluation arrays with integrated voice call rooms and seamless feedback logs.
           </p>
 
           {/* UPGRADED PRIMARY HOVER STATE FEEDBACK CONTROLLERS */}
@@ -244,9 +244,9 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <ScrollReveal>
               <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-indigo-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Dynamic Persona</p>
-                <h3 className="text-xl font-bold mb-2 text-gray-100">Algorithmic Patients</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">AI systems compute structural pain tolerances, localized anxiety states, and distinct occupational histories dynamically per intake session.</p>
+                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Real-Time Voice Calls</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-100">Secure Voice Link</h3>
+                <p className="text-xs text-gray-400 leading-relaxed">Engage patients directly via full-duplex simulated audio call rooms with speech recognition, audio wave visualizers, push-to-talk controls, and live TTS responses.</p>
               </div>
             </ScrollReveal>
 
@@ -260,9 +260,9 @@ export default function LandingPage() {
 
             <ScrollReveal delay="delay-200">
               <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-amber-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Portfolio Architecture</p>
-                <h3 className="text-xl font-bold mb-2 text-gray-100">Live Command Center</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">Session logging preserves global performance matrices, precision accuracy rates, and differential target matching for admissions board presentation.</p>
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Upgraded Command Center</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-100">Seamless Feedback Logs</h3>
+                <p className="text-xs text-gray-400 leading-relaxed">Every completed consultation log gives you granular, in-detail feedback including critical red flags, differential targets, and multi-metric breakdown scores.</p>
               </div>
             </ScrollReveal>
           </div>
@@ -281,16 +281,16 @@ export default function LandingPage() {
             <ScrollReveal>
               <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e1424] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
                 <div className="h-8 w-8 rounded-lg bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center font-mono text-xs text-indigo-400 font-bold">01</div>
-                <h4 className="font-bold text-base text-gray-200">Interactive Clinical History Log</h4>
-                <p className="text-xs text-gray-400 leading-relaxed">The interview panel forces targeted interrogation workflows. Meta-profile screening queries are automatically flagged as contextually irrelevant to preserve strict timeframe simulation bounds.</p>
+                <h4 className="font-bold text-base text-gray-200">Interactive Clinical History Log & Voice Calls</h4>
+                <p className="text-xs text-gray-400 leading-relaxed">The interview panel supports both text interrogation and live secure voice call rooms. Patients realistically articulate symptoms, pain behaviors, and history dynamically.</p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-100">
               <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e1424] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
                 <div className="h-8 w-8 rounded-lg bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center font-mono text-xs text-emerald-400 font-bold">02</div>
-                <h4 className="font-bold text-base text-gray-200">Algorithmic Score Processing</h4>
-                <p className="text-xs text-gray-400 leading-relaxed">Submissions automatically run an analysis script factoring aggregate question depth indicators, procedural accuracy parameters, and precision classification targeting models.</p>
+                <h4 className="font-bold text-base text-gray-200">Upgraded Dashboard & Detailed Feedback</h4>
+                <p className="text-xs text-gray-400 leading-relaxed">The command center tracks clinical exposure, patient acuity profiles, and diagnostic performance matrices with comprehensive log inspection panels providing deep post-exam insights.</p>
               </div>
             </ScrollReveal>
           </div>
