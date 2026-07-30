@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import{ analytics } from "@vercel/analytics/next"
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -14,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "MedSim.AI | Clinical OSCE Assessment Engine",
-  description: "Next-Generation Clinical Assessment and Voice-Enabled Patient Simulation Platform for Medical Candidates.",
+  description:
+    "Next-Generation Clinical Assessment and Voice-Enabled Patient Simulation Platform for Medical Candidates.",
   keywords: ["OSCE", "Medical Simulation", "Clinical Training", "AI Patient", "Doctor Exam"],
   authors: [{ name: "MedSim Enterprise" }],
   icons: {
@@ -39,7 +41,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#070a12] text-white">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#070a12] text-white">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
