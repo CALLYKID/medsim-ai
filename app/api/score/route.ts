@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const openRouter = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY || "",
@@ -10,12 +13,13 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
     return NextResponse.json({
       historyScore: 25,
+      empathyScore: 5,
       feedback: "System calibration error: OpenRouter credentials unconfigured on live host."
     });
   }
 
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { 
       investigationSummary, 
       chiefComplaint, 
@@ -24,20 +28,20 @@ export async function POST(req: Request) {
       differentials,
       performedExamsCount,
       personality,
-       painTolerance
+      painTolerance
     } = body;
 
-        const prompt = `You are an expert medical school objective clinical examiner grading a student's history-taking performance during an OSCE simulation.
+    const prompt = `You are an expert medical school objective clinical examiner grading a student's history-taking performance during an OSCE simulation.
 
 CASE PROFILE:
-- Patient Chief Complaint: "${chiefComplaint}"
-- Actual Underlying Diagnosis: "${correctDiagnosis}"
+- Patient Chief Complaint: "${chiefComplaint || "None"}"
+- Actual Underlying Diagnosis: "${correctDiagnosis || "Unknown"}"
 
 STUDENT'S CLINICAL CLERKSHIP PERFORMANCE:
-- Primary Final Diagnosis Submitted: "${finalDiagnosis}"
+- Primary Final Diagnosis Submitted: "${finalDiagnosis || "None"}"
 - Working Differential Board (DDx): [ ${differentials ? differentials.join(", ") : "None entered"} ]
 - Number of Physical Systems Examined: ${performedExamsCount || 0} / 5
-- Question & Answer Chat Transcript Context: ${investigationSummary}
+- Question & Answer Chat Transcript Context: ${investigationSummary || "No transcript"}
 
 TASK:
 Evaluate the history-taking chat component out of 40 points total. Use the student's working differentials and physical exams to contextually understand their questioning strategy.
@@ -45,9 +49,7 @@ Evaluate the history-taking chat component out of 40 points total. Use the stude
 SCORING CRITERIA (40 Points Max):
 1. Relevancy & Strategy (Up to 20 pts): Did their history questions align with ruling in/out the diseases they listed on their DDx board? If their questions seem random but align with a listed differential, award higher points for strategic tracking.
 2. Efficiency & Clinical Flow (Up to 20 pts): Did they follow a logical path based on the chief complaint? Deduct points if they repeated questions, asked completely irrelevant questions outside their DDx scope, or failed to explore the presenting symptom.
-3. Communication & Empathy (up to 10 pts): Review how the student interacted with the patient's personality ("${personality}") and pain tolerance ("${painTolerance}"). Did they show empathy when appropriate, or were they strictly robotic and dismissive of the patient's state?
-
-
+3. Communication & Empathy (up to 10 pts): Review how the student interacted with the patient's personality ("${personality || "Standard"}") and pain tolerance ("${painTolerance || "Normal"}"). Did they show empathy when appropriate, or were they strictly robotic and dismissive of the patient's state?
 
 OUTPUT SPECIFICATION:
 Provide a score for the history-taking part only. Then write a highly customized, concise 2-sentence feedback string referencing their overall approach. Acknowledge if their differentials correctly guided their questioning.
@@ -55,10 +57,9 @@ Provide a score for the history-taking part only. Then write a highly customized
 You must respond with a strictly valid JSON object matching this exact format:
 {
   "historyScore": <integer between 0 and 40>,
-   "empathyScore": <integer between 0 and 10>,
+  "empathyScore": <integer between 0 and 10>,
   "feedback": "<concise 2-sentence feedback string>"
 }`;
-
 
     const completion = await openRouter.chat.completions.create({
       model: "google/gemini-2.5-flash",
@@ -76,21 +77,11 @@ You must respond with a strictly valid JSON object matching this exact format:
       ],
     });
 
-    let rawText = completion.choices[0].message.content ? completion.choices[0].message.content.trim() : "{}";
+    let rawText = completion.choices[0]?.message?.content ? completion.choices[0].message.content.trim() : "{}";
 
-    // Clean out any accidental markdown wrapper syntax (```json ... ```) safely
-    if (rawText.startsWith("```")) {
-      const firstLineBreak = rawText.indexOf("\n");
-      if (firstLineBreak !== -1) {
-        rawText = rawText.substring(firstLineBreak + 1);
-      } else {
-        rawText = rawText.replace(/```/g, "");
-      }
-      
-      if (rawText.endsWith("```")) {
-        rawText = rawText.substring(0, rawText.length - 3);
-      }
-      rawText = rawText.trim();
+    // Enhanced markdown block sanitizer
+    if (rawText.includes("```")) {
+      rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
     }
 
     const data = JSON.parse(rawText);
@@ -98,7 +89,7 @@ You must respond with a strictly valid JSON object matching this exact format:
   } catch (error) {
     console.error("Grading route error:", error);
     return NextResponse.json(
-      { historyScore: 25, feedback: "Unable to process clinical history grading via evaluation engine." },
+      { historyScore: 25, empathyScore: 5, feedback: "Unable to process clinical history grading via evaluation engine." },
       { status: 500 }
     );
   }

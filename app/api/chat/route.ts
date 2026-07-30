@@ -1,20 +1,28 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY!,
 });
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
 
-    const message = body.message;
-    const context = body.context;
-    const history = body.history || [];
+    const message = body?.message;
+    const context = body?.context;
+    const history = body?.history || [];
+
+    if (!message || typeof message !== "string") {
+      return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    }
 
     const disease = context?.disease;
-  const patient = context?.patient;
+    const patient = context?.patient;
+    
     const findings = disease?.hidden?.findings?.length
       ? disease.hidden.findings
           .map((f: any) => `- ${f.question}: ${f.answer}`)
@@ -22,14 +30,13 @@ export async function POST(req: Request) {
       : "No findings available.";
 
     const formattedHistory = history
-      .filter((msg: any) => msg && msg.text && msg.text.trim() !== "")
+      .filter((msg: any) => msg && msg.text && typeof msg.text === "string" && msg.text.trim() !== "")
       .filter((msg: any) => msg.text !== message)
-      .sort((a: any, b: any) => a.id - b.id)
+      .sort((a: any, b: any) => (a.id || 0) - (b.id || 0))
       .map((msg: any) => ({
         role: msg.role === "user" ? "user" : "assistant",
         content: msg.text,
       }));
-
 
     const systemPrompt = `
 You are a realistic medical patient simulator.
@@ -99,20 +106,15 @@ RULES:
 - Answer direct symptom questions clearly first.
 `;
 
-
-
     const completion = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       max_completion_tokens: 1024,
-
       messages: [
         {
           role: "system",
           content: systemPrompt,
         },
-
         ...formattedHistory,
-
         {
           role: "user",
           content: message,
@@ -120,16 +122,14 @@ RULES:
       ],
     });
 
-
-    return Response.json({
-      reply: completion.choices[0].message.content || "",
+    return NextResponse.json({
+      reply: completion.choices[0]?.message?.content || "",
     });
 
-
   } catch (error) {
-    console.error(error);
+    console.error("Chat route execution error:", error);
 
-    return Response.json(
+    return NextResponse.json(
       {
         reply: "I'm sorry, I didn't quite catch that."
       },
@@ -139,3 +139,4 @@ RULES:
     );
   }
 }
+
