@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MedSim.AI | Clinical OSCE Assessment Engine",
+  title: "MedicSim | Clinical OSCE Assessment Engine",
   description:
     "Next-Generation Clinical Assessment and Voice-Enabled Patient Simulation Platform for Medical Candidates.",
-  keywords: ["OSCE", "Medical Simulation", "Clinical Training", "AI Patient", "Doctor Exam"],
-  authors: [{ name: "MedSim Enterprise" }],
+  keywords: ["OSCE", "Medical Simulation", "Clinical Training", "AI Patient", "Med sim", "Med", "Sim", "Doctor Exam"],
+  authors: [{ name: "Leonard Daramola" }],
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
