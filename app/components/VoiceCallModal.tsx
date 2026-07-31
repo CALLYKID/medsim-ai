@@ -14,7 +14,7 @@ export const patientAvatars = {
   female: {
     young: "/avatars/female_young.png",
     adult: "/avatars/female_adult.png",
-    middle: "/avatars/middle_female.png",
+    middle: "/avatars/female_middle.png",
     senior: "/avatars/female_senior.png",
   },
 };
