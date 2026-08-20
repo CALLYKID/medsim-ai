@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { Patient } from "../data/patientGenerator";
-
+ 
 // Patient Avatar Assets Mapping
 export const patientAvatars = {
   male: {
     young: "/avatars/male_young.png",
-    adult: "/avatars/male_adult.png",
+    adult: "/avatars/male_adult.png",  
     middle: "/avatars/male_middle.png",
     senior: "/avatars/male_senior.png",
-  },
+  }, 
   female: {
     young: "/avatars/female_young.png",
     adult: "/avatars/female_adult.png",

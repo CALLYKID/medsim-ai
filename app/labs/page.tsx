@@ -563,11 +563,11 @@ export default function LabsPage() {
                   <span className="flex h-2.5 w-2.5 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                  </span>
-                  <span>Formulating patient clinical response...</span>
+                  </span> 
+                  <span>Formulating patient clinical response...</span> 
                 </div>
-              )}
-
+              )} //testing syncing
+ 
               {messages.map((m, idx) => (
                 <div key={m.id} className={`p-4 rounded-2xl border transition-all duration-300 shadow-sm ${
                   m.role === "user" 
@@ -731,7 +731,7 @@ export default function LabsPage() {
                 {scoreBreakdown && (
                   <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 font-mono text-xs shadow-inner">
                     <div className="flex justify-between border-b border-slate-800/60 pb-1">
-                      <span className="text-slate-400">History Chat:</span>
+                      <span className="text-slate-400">History Taking:</span>
                       <span className="text-indigo-300 font-bold">{scoreBreakdown.history}/30</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-800/60 pb-1">
@@ -770,7 +770,9 @@ export default function LabsPage() {
 
       </div>
 
-      {/* Voice Call Modal Integration */}
+      
+      {/* Voice Call Modal Intergration.
+      */}
      <VoiceCallModal
   patient={patient}
   isOpen={isCallActive}
@@ -780,3 +782,4 @@ export default function LabsPage() {
     </main>
   );
 }
+

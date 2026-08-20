@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PageTransition from "./components/PageTransition";
 
-// Custom hook to handle scroll reveal animations cleanly
+// Custom hook to handle scroll reveal animations more cleaner
+
 function useIntersectionObserver() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -86,7 +87,7 @@ export default function LandingPage() {
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Core Modules
-            </a>
+        </a>
             
             <a 
               href="#metrics" 
@@ -95,7 +96,7 @@ export default function LandingPage() {
                 after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
-              Metrics Matrix
+              Top Features
             </a>
             
             <Link 
@@ -162,7 +163,7 @@ export default function LandingPage() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
             >
-              Metrics Matrix
+              Top features
             </a>
             <Link 
               href="/dashboard" 
@@ -178,7 +179,7 @@ export default function LandingPage() {
             >
               About
             </Link>
-            <Link 
+         <Link 
               href="/labs" 
               onClick={() => setIsMobileMenuOpen(false)}
               className="w-full bg-indigo-600 hover:bg-indigo-500 px-4 py-3 rounded-xl text-center text-sm font-bold uppercase tracking-wider transition-all text-white shadow-lg shadow-indigo-600/20"
@@ -272,7 +273,7 @@ export default function LandingPage() {
         <section id="features" className="max-w-5xl mx-auto px-6 py-16 border-t border-white/5 space-y-12">
           <ScrollReveal>
             <div className="max-w-md">
-              <span className="text-[10px] font-black tracking-widest uppercase text-indigo-500">System Modules</span>
+              <span className="text-[10px] font-black tracking-widest uppercase text-indigo-500">Core Modules</span>
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white">Engineered around clinical precision rules.</h2>
             </div>
           </ScrollReveal>
@@ -298,7 +299,7 @@ export default function LandingPage() {
 
         {/* FOOTER METRICS TELEMETRY */}
         <footer className="w-full max-w-5xl mx-auto px-6 py-8 border-t border-white/5 text-center text-[10px] font-mono text-gray-500 tracking-wider">
-          MEDSIM ENTERPRISE PORTFOLIO SYSTEM // ALL CLINICAL TELEMETRY GENERATED DYNAMICALLY VIA REALTIME COMPUTE LABS.
+          MEDSIM AI// ALL CLINICAL TELEMETRY SIMULATIONS GENERATED DYNAMICALLY VIA REALTIME COMPUTE LABS.
         </footer>
 
       </div>
