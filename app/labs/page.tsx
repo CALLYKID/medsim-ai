@@ -566,7 +566,7 @@ export default function LabsPage() {
                   </span> 
                   <span>Formulating patient clinical response...</span> 
                 </div>
-              )} //testing syncing
+              )} 
  
               {messages.map((m, idx) => (
                 <div key={m.id} className={`p-4 rounded-2xl border transition-all duration-300 shadow-sm ${
