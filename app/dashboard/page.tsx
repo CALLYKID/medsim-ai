@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import LoggedOutDashboard from "../components/LoggedOutDashboard";
 
 interface ShiftLog {
  id: string;
@@ -10,6 +12,7 @@ interface ShiftLog {
  finalScore: number;
  timestamp?: string;
  category?: string;
+  specialty?: string;
  severity?: string;
  difficulty?: "Easy" | "Moderate" | "Hard" | "Expert";
  learningPoints?: string[];
@@ -21,13 +24,58 @@ export default function DashboardPage() {
   const [selectedLog, setSelectedLog] = useState<ShiftLog | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeModalLog, setActiveModalLog] = useState<ShiftLog | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const savedLogs = localStorage.getItem("medsim_shift_logs");
-    if (savedLogs) {
-      setShiftHistory(JSON.parse(savedLogs));
+  async function loadConsultationHistory() {
+    const supabase = createClient();
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setUser(null);
+      setAuthLoading(false);
+      return;
     }
-  }, []);
+
+    setUser(user);
+
+    const { data, error } = await supabase
+      .from("consultation_results")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Failed to load consultation history:", error);
+      setAuthLoading(false);
+      return;
+    }
+
+    const logs: ShiftLog[] = (data ?? []).map((row) => ({
+      id: row.id,
+      patientName: row.patient_name,
+      correctDiagnosis: row.correct_diagnosis,
+      finalScore: row.final_score,
+      timestamp: row.created_at,
+      category: row.category ?? undefined,
+      specialty: row.specialty ?? undefined,
+      severity: row.severity ?? undefined,
+      difficulty: row.difficulty ?? undefined,
+      learningPoints: row.learning_points ?? [],
+      redFlags: row.red_flags ?? [],
+    }));
+
+    setShiftHistory(logs);
+    setAuthLoading(false);
+  }
+
+  loadConsultationHistory();
+}, []);
 
   const openModal = (log: ShiftLog) => {
     setActiveModalLog(log);
@@ -75,6 +123,14 @@ export default function DashboardPage() {
     ? Math.round(shiftHistory.reduce((acc, curr) => acc + curr.finalScore, 0) / shiftHistory.length)
     : 0;
 
+if (authLoading) {
+  return null;
+}
+
+if (!user) {
+  return <LoggedOutDashboard />;
+}
+  
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-start p-4 sm:p-8 lg:p-12 bg-[#070a12] text-white selection:bg-indigo-500/30">
       {/* SCOPED BUTTERY SMOOTH TRANSITIONS */}
@@ -368,7 +424,7 @@ export default function DashboardPage() {
                         <svg className="w-3.5 h-3.5 text-gray-500 group-hover:text-indigo-400 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>{log.timestamp.split(" • ")[1] || log.timestamp}</span>
+                        <span>   {new Date(log.timestamp).toLocaleDateString("en-US", {     month: "short",     day: "numeric",   }) +     " • " +     new Date(log.timestamp).toLocaleTimeString("en-US", {       hour: "2-digit",       minute: "2-digit",     })} </span>
                       </span>
                     )}
                     
@@ -423,7 +479,7 @@ export default function DashboardPage() {
               </div>
               {activeModalLog.timestamp && (
                 <span className="text-xs font-mono text-gray-400 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5 shadow-inner whitespace-nowrap">
-                  {activeModalLog.timestamp.split(" • ")[0]}
+                  {new Date(activeModalLog.timestamp).toLocaleDateString("en-US", {   month: "short",   day: "numeric", })}
                 </span>
               )}
             </div>

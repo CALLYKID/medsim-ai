@@ -7,6 +7,7 @@ import { generatePatient } from "../data/patientGenerator";
 import { buildPatientPrompt } from "../data/patientPromptBuilder";
 import { diseaseLibrary } from "../data/diseaseLibrary";
 import VoiceCallModal from "../components//VoiceCallModal";
+import { createClient } from "@/lib/supabase/client";
 
 export const patientAvatars = {
   male: {
@@ -256,6 +257,54 @@ export default function LabsPage() {
     setPerformedExams((prev) => ({ ...prev, [type]: true }));
   }
 
+  async function saveConsultationResult(totalScore: number) {
+  if (!patient) return;
+
+  const supabase = createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Cannot save consultation: no authenticated user.", userError);
+    return;
+  }
+
+  const difficulty =
+    patient.disease.hidden.severity === "Critical"
+      ? "Expert"
+      : patient.disease.hidden.severity === "Severe"
+      ? "Hard"
+      : patient.disease.hidden.severity === "Moderate"
+      ? "Moderate"
+      : "Easy";
+
+  const { error } = await supabase
+    .from("consultation_results")
+    .insert({
+      user_id: user.id,
+      patient_name: patient.name,
+      correct_diagnosis: patient.disease.hidden.diagnosis,
+      final_score: totalScore,
+      category: patient.disease.category,
+      specialty: patient.disease.medicalSpecialty,
+      severity: patient.disease.hidden.severity,
+      difficulty,
+      learning_points: patient.learningPoints ?? [],
+      red_flags: patient.disease.hidden.redFlags ?? [],
+    });
+
+  if (error) {
+    console.error("Failed to save consultation result:", error);
+  } else {
+    console.log("Consultation result saved to Supabase.");
+  }
+  }
+
+  
+
   async function submitDiagnosis() {
     setTimerActive(false);
     if (!patient || !diagnosis.trim() || isGrading || !hasStarted) return;
@@ -328,29 +377,8 @@ export default function LabsPage() {
       });
       setFeedback(data.feedback ?? "Evaluation compiled successfully.");
 
-      const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
-      const newLog = {
-        id: Date.now().toString(),
-        patientName: patient.name,
-        correctDiagnosis: patient.disease.hidden.diagnosis,
-        finalScore: totalScore,
-        category: patient.disease.category,
-        specialty: patient.disease.medicalSpecialty,
-        severity: patient.disease.hidden.severity,
-        difficulty:
-          patient.disease.hidden.severity === "Critical"
-            ? "Expert"
-            : patient.disease.hidden.severity === "Severe"
-            ? "Hard"
-            : patient.disease.hidden.severity === "Moderate"
-            ? "Moderate"
-            : "Easy",
-        learningPoints: patient.learningPoints,
-        redFlags: patient.disease.hidden.redFlags,
-        timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-      };
-      localStorage.setItem("medsim_shift_logs", JSON.stringify([newLog, ...currentLogs]));
-
+      await saveConsultationResult(totalScore);
+      
     } catch (e) {
       const historyFallback = 20;
       const empathyFallback = 7;
@@ -366,28 +394,8 @@ export default function LabsPage() {
       });
       setFeedback("Scoring evaluation completed with internal fallback logic values.");
 
-      const currentLogs = JSON.parse(localStorage.getItem("medsim_shift_logs") || "[]");
-      const fallbackLog = {
-        id: Date.now().toString(),
-        patientName: patient.name,
-        correctDiagnosis: patient.disease.hidden.diagnosis,
-        finalScore: totalScore,
-        category: patient.disease.category,
-        specialty: patient.disease.medicalSpecialty,
-        severity: patient.disease.hidden.severity,
-        difficulty:
-          patient.disease.hidden.severity === "Critical"
-            ? "Expert"
-            : patient.disease.hidden.severity === "Severe"
-            ? "Hard"
-            : patient.disease.hidden.severity === "Moderate"
-            ? "Moderate"
-            : "Easy",
-        learningPoints: patient.learningPoints,
-        redFlags: patient.disease.hidden.redFlags,
-        timestamp: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " • " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-      };
-      localStorage.setItem("medsim_shift_logs", JSON.stringify([fallbackLog, ...currentLogs]));
+      await saveConsultationResult(totalScore);
+
     } finally {
       setIsGrading(false);
     }

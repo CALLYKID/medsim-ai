@@ -1,5 +1,5 @@
 "use client";
-
+import AccountMenu from "./components/AccountMenu";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PageTransition from "./components/PageTransition";
@@ -126,8 +126,12 @@ export default function LandingPage() {
               <span className="relative z-10">Launch Console</span>
               <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left group-focus/btn:scale-x-100 transition-transform duration-300 ease-out" />
             </Link>
+            <AccountMenu />
           </div>
 
+          <div className="flex items-center gap-3 md:hidden">
+  <AccountMenu />
+            
           {/* COOL MORPHING HAMBURGER BUTTON */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -186,6 +190,7 @@ export default function LandingPage() {
             >
               Launch Console
             </Link>
+          </div>
           </div>
         </nav>
 
