@@ -335,6 +335,8 @@ Show Feedback
 Save Completed Result
     ↓
 Dashboard
+
+
 🎯 Design Goals
 MedicSim is built around several principles:
 Active Learning
@@ -347,17 +349,24 @@ Privacy-Conscious Architecture
 Only information required for the user's long-term progress should be stored.
 Accessible UX
 The platform should remain easy to use across different screen sizes and devices.
+
+
 📄 Legal
 MedicSim includes dedicated:
-Privacy Policy⁠�
-Terms of Service⁠�
+Privacy Policy⁠� medicsim.vercel.app/privacy
+Terms of Service⁠� medicsim.vercel
+app/terms
 MedicSim is an educational simulation platform and is not a substitute for professional medical education, supervision, diagnosis, or treatment.
 Users should not use MedicSim to make decisions about a real person's medical care.
+
+
 🚀 Deployment
 MedicSim is deployed using Vercel.
 Production application:
 https://medicsim.vercel.app⁠�
 The application can be updated through the project's deployment workflow.
+
+
 🛠️ Development
 Run the development server:
 npm run dev
@@ -365,6 +374,8 @@ Build the production application:
 npm run build
 Start the production server:
 npm start
+
+
 🔮 Future Development
 Potential future improvements include:
 More clinical specialties
@@ -377,11 +388,17 @@ Additional authentication options
 More advanced dashboard visualisations
 Improved mobile experience
 Additional educational resources
+
+
 👨‍💻 Project
 MedicSim
 An educational clinical simulation platform built to make clinical reasoning practice more interactive, measurable, and accessible.
+
+
 Built with:
 Next.js · React · TypeScript · Tailwind CSS · Supabase · PostgreSQL · Vercel
+
+
 ⚠️ Educational Disclaimer
 MedicSim provides simulated educational scenarios only.
 It does not provide real-world medical diagnosis, treatment, healthcare services, or professional medical advice.
