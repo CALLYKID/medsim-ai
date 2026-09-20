@@ -69,7 +69,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col">
               <span className="text-base font-black tracking-wider text-white uppercase font-sans leading-none">
-                MEDSIM<span className="text-indigo-400">.AI</span>
+                MEDICSIM<span className="text-indigo-400"> AI</span>
               </span>
               <span className="text-[9px] text-gray-400 uppercase tracking-widest font-black leading-none mt-1">
                 Clinical Engine
@@ -304,7 +304,7 @@ export default function LandingPage() {
 
         {/* FOOTER METRICS TELEMETRY */}
         <footer className="w-full max-w-5xl mx-auto px-6 py-8 border-t border-white/5 text-center text-[10px] font-mono text-gray-500 tracking-wider">
-          MEDSIM AI// ALL CLINICAL TELEMETRY SIMULATIONS GENERATED DYNAMICALLY VIA REALTIME COMPUTE LABS.
+          MEDICSIM AI// ALL CLINICAL TELEMETRY SIMULATIONS GENERATED DYNAMICALLY VIA REALTIME COMPUTE LABS.
         </footer>
 
       </div>
