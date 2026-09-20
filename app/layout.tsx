@@ -18,8 +18,22 @@ export const metadata: Metadata = {
   title: "MedicSim | Clinical OSCE Assessment Engine",
   description:
     "Next-Generation Clinical Assessment and Voice-Enabled Patient Simulation Platform for Medical Candidates.",
-  keywords: ["OSCE", "Medical Simulation", "Clinical Training", "AI Patient", "Med sim", "Med", "Sim", "Doctor Exam"],
+  keywords: [
+    "OSCE",
+    "Medical Simulation",
+    "Clinical Training",
+    "AI Patient",
+    "Med sim",
+    "Med",
+    "Sim",
+    "Doctor Exam",
+  ],
   authors: [{ name: "Leonard Daramola" }],
+
+  verification: {
+    google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
+  },
+
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -29,13 +43,8 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "180x180", type: "image/x-icon" },
     ],
     shortcut: ["/favicon.ico"],
-
-    verification: {
-    google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
-  },
   },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
