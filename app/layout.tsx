@@ -8,11 +8,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  verification: {
-    google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
-  },
-};
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -33,6 +29,10 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "180x180", type: "image/x-icon" },
     ],
     shortcut: ["/favicon.ico"],
+
+    verification: {
+    google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
+  },
   },
 };
 
