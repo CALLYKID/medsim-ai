@@ -8,30 +8,69 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "MedicSim | Clinical OSCE Assessment Engine",
+  metadataBase: new URL("https://medicsim.vercel.app"),
+
+  title: {
+    default: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    template: "%s | MedicSim",
+  },
+
   description:
-    "Next-Generation Clinical Assessment and Voice-Enabled Patient Simulation Platform for Medical Candidates.",
+    "MedicSim is an AI-powered clinical simulation platform for OSCE practice, clinical assessments, and realistic patient simulation.",
+
   keywords: [
-    "OSCE",
-    "Medical Simulation",
-    "Clinical Training",
-    "AI Patient",
-    "Med sim",
-    "Med",
-    "Sim",
-    "Doctor Exam",
+    "OSCE practice",
+    "OSCE simulator",
+    "clinical simulation",
+    "medical simulation",
+    "clinical assessment",
+    "patient simulation",
+    "AI patient simulation",
+    "medical training",
+    "OSCE preparation",
   ],
+
   authors: [{ name: "Leonard Daramola" }],
+  creator: "MedicSim",
+  publisher: "MedicSim",
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+
+  alternates: {
+    canonical: "https://medicsim.vercel.app",
+  },
 
   verification: {
     google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
+  },
+
+  openGraph: {
+    title: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    description:
+      "AI-powered clinical simulation for OSCE practice, clinical assessments, and realistic patient simulation.",
+    url: "https://medicsim.vercel.app",
+    siteName: "MedicSim",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    description:
+      "AI-powered clinical simulation for OSCE practice, clinical assessments, and realistic patient simulation.",
   },
 
   icons: {
@@ -45,6 +84,7 @@ export const metadata: Metadata = {
     shortcut: ["/favicon.ico"],
   },
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
