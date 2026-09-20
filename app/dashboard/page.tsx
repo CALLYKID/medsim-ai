@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import LoggedOutDashboard from "../components/LoggedOutDashboard";
+import ThemeSelector from "../components/ThemeSelector";
 
 interface ShiftLog {
  id: string;

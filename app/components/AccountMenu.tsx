@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import ThemeSelector from "./ThemeSelector";
 
 export default function AccountMenu() {
   const [user, setUser] = useState<any>(null);
@@ -121,15 +122,15 @@ export default function AccountMenu() {
         <button
           type="button"
           onClick={() => setShowLoginOverlay(true)}
-          className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-200 shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-400/40 hover:bg-indigo-500/10 hover:text-white hover:shadow-indigo-500/10 active:translate-y-0 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-200 shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-white hover:shadow-indigo-500/10 active:translate-y-0 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
         >
           <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
-          <span className="relative h-1.5 w-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.8)] transition-all duration-300 group-hover:scale-125 group-hover:bg-indigo-300" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_8px_rgba(129,140,248,0.8)] transition-all duration-300 group-hover:scale-125" />
 
           <span className="relative">Log in</span>
 
-          <span className="relative text-gray-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-indigo-300">
+          <span className="relative text-gray-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--primary)]">
             →
           </span>
         </button>
@@ -141,7 +142,7 @@ export default function AccountMenu() {
           <button
             type="button"
             onClick={() => setShowAccountMenu(!showAccountMenu)}
-            className="group flex cursor-pointer items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
+            className="group flex cursor-pointer items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60"
             aria-label="Open account menu"
             aria-expanded={showAccountMenu}
           >
@@ -149,17 +150,18 @@ export default function AccountMenu() {
               <img
                 src={avatarUrl}
                 alt={displayName}
-                className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-lg transition-all duration-300 group-hover:border-indigo-400/60 group-hover:scale-105 group-hover:shadow-indigo-500/20 group-active:scale-95"
+                className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-lg transition-all duration-300 group-hover:border-[var(--primary)]/60 group-hover:scale-105 group-hover:shadow-indigo-500/20 group-active:scale-95"
               />
             ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-black transition-all duration-300 group-hover:scale-105 group-hover:bg-indigo-500 group-active:scale-95">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-black transition-all duration-300 group-hover:scale-105 group-hover:opacity-90 group-active:scale-95">
                 {displayName.charAt(0).toUpperCase()}
               </div>
             )}
           </button>
 
           {showAccountMenu && (
-            <div className="absolute right-0 top-12 z-[100] w-56 origin-top-right animate-[accountMenuIn_0.18s_ease-out] rounded-2xl border border-white/10 bg-[#0f1626] p-2 shadow-2xl shadow-black/40">
+            <div className="absolute right-0 top-12 z-[100] w-72 origin-top-right animate-[accountMenuIn_0.18s_ease-out] rounded-2xl border border-white/10 bg-[var(--card)] p-2 shadow-2xl shadow-black/40">
+
               <div className="mb-1 border-b border-white/5 px-3 py-3">
                 <p className="truncate text-sm font-bold text-white">
                   {displayName}
@@ -178,16 +180,26 @@ export default function AccountMenu() {
                 className="group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold text-gray-300 transition-all duration-200 hover:bg-white/5 hover:pl-4 hover:text-white active:scale-[0.98]"
               >
                 <span>Performance Dashboard</span>
-                <span className="text-gray-600 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-indigo-400">
+
+                <span className="text-gray-600 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--primary)]">
                   →
                 </span>
               </Link>
+
+              {/* APPEARANCE */}
+              <div className="mt-2 border-t border-white/5 pt-3">
+                <p className="px-3 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                  Appearance
+                </p>
+
+                <ThemeSelector />
+              </div>
 
               <button
                 type="button"
                 onClick={signOut}
                 disabled={signingOut}
-                className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs font-bold text-red-400 transition-all duration-200 hover:bg-red-500/5 hover:pl-4 hover:text-red-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="group mt-2 flex w-full cursor-pointer items-center justify-between rounded-xl border-t border-white/5 px-3 py-3 pt-3 text-left text-xs font-bold text-red-400 transition-all duration-200 hover:bg-red-500/5 hover:pl-4 hover:text-red-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span>{signingOut ? "Logging out..." : "Log out"}</span>
 
@@ -207,7 +219,7 @@ export default function AccountMenu() {
           onClick={closeLoginOverlay}
         >
           <div
-            className="login-modal relative w-full max-w-md cursor-default rounded-3xl border border-white/10 bg-[#0c111d]/95 p-7 shadow-2xl shadow-black/50 backdrop-blur-2xl sm:p-9"
+            className="login-modal relative w-full max-w-md cursor-default rounded-3xl border border-white/10 bg-[var(--card)]/95 p-7 shadow-2xl shadow-black/50 backdrop-blur-2xl sm:p-9"
             onClick={(e) => e.stopPropagation()}
           >
             {/* CLOSE */}
@@ -222,7 +234,7 @@ export default function AccountMenu() {
             </button>
 
             <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/20 transition-transform duration-500 hover:scale-105 hover:rotate-2">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-purple-600 shadow-xl shadow-indigo-500/20 transition-transform duration-500 hover:scale-105 hover:rotate-2">
                 <svg
                   className="h-7 w-7 text-white"
                   fill="none"

@@ -31,8 +31,15 @@ function useIntersectionObserver() {
   return ref;
 }
 
-function ScrollReveal({ children, delay = "" }: { children: React.ReactNode; delay?: string }) {
+function ScrollReveal({
+  children,
+  delay = "",
+}: {
+  children: React.ReactNode;
+  delay?: string;
+}) {
   const ref = useIntersectionObserver();
+
   return (
     <div
       ref={ref}
@@ -48,29 +55,39 @@ export default function LandingPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#070a12] text-white selection:bg-indigo-500/30 overflow-x-hidden">
-        
+      <div className="min-h-screen bg-[var(--background)] text-[var(--text)] selection:bg-indigo-500/30 overflow-x-hidden">
+
         {/* RESPONSIVE NAV BAR */}
         <nav className="w-full max-w-6xl mx-auto px-6 py-5 flex justify-between items-center border-b border-white/5 relative z-50">
-          
+
           {/* ENHANCED HIGH-VISIBILITY LOGO */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0 focus:outline-none">
-            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 group-hover:scale-105 group-focus:scale-105 transition-transform duration-300">
-              <svg 
-                className="w-4.5 h-4.5 text-white animate-pulse" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
+          <Link
+            href="/"
+            className="flex items-center gap-3 group shrink-0 focus:outline-none"
+          >
+            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--primary)] to-purple-600 shadow-lg shadow-indigo-500/20 group-hover:scale-105 group-focus:scale-105 transition-transform duration-300">
+              <svg
+                className="w-4.5 h-4.5 text-white animate-pulse"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
                 strokeWidth={3}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
               <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
+
             <div className="flex flex-col">
               <span className="text-base font-black tracking-wider text-white uppercase font-sans leading-none">
-                MEDICSIM<span className="text-indigo-400"> AI</span>
+                MEDICSIM
+                <span className="text-[var(--primary)]"> AI</span>
               </span>
+
               <span className="text-[9px] text-gray-400 uppercase tracking-widest font-black leading-none mt-1">
                 Clinical Engine
               </span>
@@ -79,141 +96,162 @@ export default function LandingPage() {
 
           {/* DESKTOP NAV BUTTONS */}
           <div className="hidden md:flex items-center gap-6 text-xs font-medium text-gray-400">
-            <a 
-              href="#features" 
+
+            <a
+              href="#features"
               className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
-                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[var(--primary)]
                 after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Core Modules
-        </a>
-            
-            <a 
-              href="#metrics" 
+            </a>
+
+            <a
+              href="#metrics"
               className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
-                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[var(--primary)]
                 after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Top Features
             </a>
-            
-            <Link 
+
+            <Link
               href="/about"
               className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
-                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[var(--primary)]
                 after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               About
             </Link>
 
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               className="relative py-1 hover:text-white transition-colors duration-300 block focus:outline-none focus:text-white
-                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-indigo-500
+                after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-[var(--primary)]
                 after:scale-x-0 after:origin-right hover:after:scale-x-100 hover:after:origin-left focus:after:scale-x-100
                 after:transition-transform after:duration-300 after:ease-out"
             >
               Performance Logs
             </Link>
-            
-            <Link 
-              href="/labs" 
+
+            <Link
+              href="/labs"
               className="bg-white/5 hover:bg-white/10 focus:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-all text-white relative overflow-hidden group/btn focus:outline-none"
             >
               <span className="relative z-10">Launch Console</span>
-              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-indigo-500 scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left group-focus/btn:scale-x-100 transition-transform duration-300 ease-out" />
+
+              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--primary)] scale-x-0 origin-right group-hover/btn:scale-x-100 group-hover/btn:origin-left group-focus/btn:scale-x-100 transition-transform duration-300 ease-out" />
             </Link>
+
             <AccountMenu />
           </div>
 
           <div className="flex items-center gap-3 md:hidden">
-  <AccountMenu />
-            
-          {/* COOL MORPHING HAMBURGER BUTTON */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 text-gray-400 hover:text-white transition-colors focus:outline-none z-50"
-            aria-label="Toggle Menu"
-          >
-            <span className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
-              isMobileMenuOpen ? "rotate-45 translate-y-2" : ""
-            }`} />
-            <span className={`h-0.5 w-6 bg-current transition-all duration-200 ease-in-out ${
-              isMobileMenuOpen ? "opacity-0" : ""
-            }`} />
-            <span className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
-              isMobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-            }`} />
-          </button>
+            <AccountMenu />
 
-          {/* SMOOTH SLIDE-DOWN & FADE MOBILE DROPDOWN DRAWER */}
-          <div className={`absolute top-full left-0 w-full bg-[#0a0e1a]/95 backdrop-blur-lg border-b border-white/10 px-6 py-4 flex flex-col gap-4 md:hidden shadow-2xl transition-all duration-300 ease-out origin-top ${
-            isMobileMenuOpen 
-              ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto" 
-              : "opacity-0 scale-y-95 -translate-y-2 pointer-events-none"
-          }`}>
-            <a 
-              href="#features" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+            {/* COOL MORPHING HAMBURGER BUTTON */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 text-gray-400 hover:text-white transition-colors focus:outline-none z-50"
+              aria-label="Toggle Menu"
             >
-              Core Modules
-            </a>
-            <a 
-              href="#metrics" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+              <span
+                className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
+                  isMobileMenuOpen ? "rotate-45 translate-y-2" : ""
+                }`}
+              />
+
+              <span
+                className={`h-0.5 w-6 bg-current transition-all duration-200 ease-in-out ${
+                  isMobileMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+
+              <span
+                className={`h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out ${
+                  isMobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
+              />
+            </button>
+
+            {/* SMOOTH SLIDE-DOWN & FADE MOBILE DROPDOWN DRAWER */}
+            <div
+              className={`absolute top-full left-0 w-full bg-[var(--card)]/95 backdrop-blur-lg border-b border-white/10 px-6 py-4 flex flex-col gap-4 md:hidden shadow-2xl transition-all duration-300 ease-out origin-top ${
+                isMobileMenuOpen
+                  ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-y-95 -translate-y-2 pointer-events-none"
+              }`}
             >
-              Top features
-            </a>
-            <Link 
-              href="/dashboard" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
-            >
-              Performance Logs
-            </Link>
-            <Link 
-              href="/about"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
-            >
-              About
-            </Link>
-         <Link 
-              href="/labs" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 px-4 py-3 rounded-xl text-center text-sm font-bold uppercase tracking-wider transition-all text-white shadow-lg shadow-indigo-600/20"
-            >
-              Launch Console
-            </Link>
-          </div>
+              <a
+                href="#features"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+              >
+                Core Modules
+              </a>
+
+              <a
+                href="#metrics"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+              >
+                Top features
+              </a>
+
+              <Link
+                href="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+              >
+                Performance Logs
+              </Link>
+
+              <Link
+                href="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors py-2 border-b border-white/5"
+              >
+                About
+              </Link>
+
+              <Link
+                href="/labs"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full bg-[var(--primary)] hover:opacity-90 px-4 py-3 rounded-xl text-center text-sm font-bold uppercase tracking-wider transition-all text-white shadow-lg shadow-indigo-600/20"
+              >
+                Launch Console
+              </Link>
+            </div>
           </div>
         </nav>
 
         {/* HERO SECTION */}
         <header className="max-w-4xl mx-auto text-center px-6 pt-16 pb-20 relative">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-          
+
           {/* ENHANCED HIGHER IMPACT MISSION ONBOARDING CAPSULE */}
           <div className="inline-flex flex-col items-center mb-10 relative group w-full max-w-2xl mx-auto animate-fade-in">
+
             {/* Ambient Background Glow */}
             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-lg opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
-            
+
             {/* Container with scaled-up text hierarchy */}
-            <div className="relative flex flex-col md:flex-row items-center gap-4 px-5 py-3.5 rounded-2xl bg-[#0a0f1d]/80 border border-indigo-500/30 backdrop-blur-md shadow-2xl w-full">
+            <div className="relative flex flex-col md:flex-row items-center gap-4 px-5 py-3.5 rounded-2xl bg-[var(--card)]/80 border border-[var(--primary)]/30 backdrop-blur-md shadow-2xl w-full">
+
               <div className="flex items-center gap-2 border-b md:border-b-0 md:border-r border-white/10 pb-2 md:pb-0 md:pr-4 shrink-0">
-                <span className="h-2.5 w-2.5 rounded-full bg-indigo-400 animate-pulse" />
-                <span className="text-xs font-black tracking-widest text-indigo-300 uppercase font-sans">
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary)] animate-pulse" />
+
+                <span className="text-xs font-black tracking-widest text-[var(--primary)] uppercase font-sans">
                   OSCE MISSION
                 </span>
               </div>
+
               <p className="text-sm sm:text-base font-normal text-gray-200 tracking-wide text-center md:text-left leading-relaxed">
                 You are the medical examiner.{" "}
-                <span className="bg-gradient-to-r from-indigo-300 via-indigo-400 to-purple-400 bg-clip-text text-transparent font-bold">
+                <span className="bg-gradient-to-r from-indigo-300 via-[var(--primary)] to-purple-400 bg-clip-text text-transparent font-bold">
                   Interrogate the patient via text or real-time voice call, perform diagnostics, and submit final assessments.
                 </span>
               </p>
@@ -223,21 +261,23 @@ export default function LandingPage() {
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-white via-gray-200 to-gray-500 bg-clip-text text-transparent leading-[1.15] mb-6">
             Next-Generation Clinical Assessment for Medical Candidates
           </h1>
-          
+
           <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-10 font-medium">
             Bridge the gap between theoretical pathology and high-stakes diagnostic decision making. Train under a strict live-telemetry monitor mimicking actual UK diagnostic evaluation arrays with integrated voice call rooms and seamless feedback logs.
           </p>
 
           {/* UPGRADED PRIMARY HOVER STATE FEEDBACK CONTROLLERS */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto sm:max-w-none">
+
             <Link
               href="/labs"
-              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.99] hover:shadow-indigo-600/30 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#070a12]"
+              className="w-full sm:w-auto bg-[var(--primary)] hover:opacity-90 hover:scale-[1.02] active:scale-[0.99] hover:shadow-indigo-600/30 px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-xl shadow-indigo-600/20 border border-indigo-400/20 text-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#070a12]"
             >
               Enter Clinical Lab &rarr;
             </Link>
-            <Link 
-              href="/dashboard" 
+
+            <Link
+              href="/dashboard"
               className="w-full sm:w-auto bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99] px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 border border-white/5 hover:border-white/20 text-gray-300 hover:text-white text-center focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#070a12]"
             >
               View Analytics Dashboard
@@ -246,57 +286,110 @@ export default function LandingPage() {
         </header>
 
         {/* CORE TELEMETRY METRICS SECTION */}
-        <section id="metrics" className="max-w-5xl mx-auto px-6 py-12 border-t border-white/5">
+        <section
+          id="metrics"
+          className="max-w-5xl mx-auto px-6 py-12 border-t border-white/5"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
             <ScrollReveal>
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-indigo-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Real-Time Voice Calls</p>
-                <h3 className="text-xl font-bold mb-2 text-gray-100">Secure Voice Link</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">Engage patients directly via full-duplex simulated audio call rooms with speech recognition, audio wave visualizers, push-to-talk controls, and live TTS responses.</p>
+              <div className="p-6 rounded-2xl bg-[var(--card)]/30 border border-white/5 backdrop-blur-md h-full hover:border-[var(--primary)]/30 hover:bg-[var(--card)]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">
+                  Real-Time Voice Calls
+                </p>
+
+                <h3 className="text-xl font-bold mb-2 text-gray-100">
+                  Secure Voice Link
+                </h3>
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Engage patients directly via full-duplex simulated audio call rooms with speech recognition, audio wave visualizers, push-to-talk controls, and live TTS responses.
+                </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-100">
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-emerald-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Objective Evaluation</p>
-                <h3 className="text-xl font-bold mb-2 text-gray-100">Physical Assessments</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">Directly interface with objective report panels including raw clinical breakdowns of Vitals, HEENT, Thoracic, and Abdominal telemetry mappings.</p>
+              <div className="p-6 rounded-2xl bg-[var(--card)]/30 border border-white/5 backdrop-blur-md h-full hover:border-emerald-500/30 hover:bg-[var(--card)]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">
+                  Objective Evaluation
+                </p>
+
+                <h3 className="text-xl font-bold mb-2 text-gray-100">
+                  Physical Assessments
+                </h3>
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Directly interface with objective report panels including raw clinical breakdowns of Vitals, HEENT, Thoracic, and Abdominal telemetry mappings.
+                </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-200">
-              <div className="p-6 rounded-2xl bg-[#0f1626]/30 border border-white/5 backdrop-blur-md h-full hover:border-amber-500/30 hover:bg-[#0f1626]/50 transition-all duration-300 group/card">
-                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">Upgraded Command Center</p>
-                <h3 className="text-xl font-bold mb-2 text-gray-100">Seamless Feedback Logs</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">Every completed consultation log gives you granular, in-detail feedback including critical red flags, differential targets, and multi-metric breakdown scores.</p>
+              <div className="p-6 rounded-2xl bg-[var(--card)]/30 border border-white/5 backdrop-blur-md h-full hover:border-amber-500/30 hover:bg-[var(--card)]/50 transition-all duration-300 group/card">
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1 group-hover/card:translate-x-1 transition-transform duration-200">
+                  Upgraded Command Center
+                </p>
+
+                <h3 className="text-xl font-bold mb-2 text-gray-100">
+                  Seamless Feedback Logs
+                </h3>
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Every completed consultation log gives you granular, in-detail feedback including critical red flags, differential targets, and multi-metric breakdown scores.
+                </p>
               </div>
             </ScrollReveal>
           </div>
         </section>
 
         {/* TECHNICAL ARCHITECTURE MODULE FEATURES */}
-        <section id="features" className="max-w-5xl mx-auto px-6 py-16 border-t border-white/5 space-y-12">
+        <section
+          id="features"
+          className="max-w-5xl mx-auto px-6 py-16 border-t border-white/5 space-y-12"
+        >
           <ScrollReveal>
             <div className="max-w-md">
-              <span className="text-[10px] font-black tracking-widest uppercase text-indigo-500">Core Modules</span>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white">Engineered around clinical precision rules.</h2>
+              <span className="text-[10px] font-black tracking-widest uppercase text-[var(--primary)]">
+                Core Modules
+              </span>
+
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white">
+                Engineered around clinical precision rules.
+              </h2>
             </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             <ScrollReveal>
-              <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e1424] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
-                <div className="h-8 w-8 rounded-lg bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center font-mono text-xs text-indigo-400 font-bold">01</div>
-                <h4 className="font-bold text-base text-gray-200">Interactive Clinical History Log & Voice Calls</h4>
-                <p className="text-xs text-gray-400 leading-relaxed">The interview panel supports both text interrogation and live secure voice call rooms. Patients realistically articulate symptoms, pain behaviors, and history dynamically.</p>
+              <div className="p-6 rounded-2xl bg-gradient-to-b from-[var(--card)] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
+                <div className="h-8 w-8 rounded-lg bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center font-mono text-xs text-[var(--primary)] font-bold">
+                  01
+                </div>
+
+                <h4 className="font-bold text-base text-gray-200">
+                  Interactive Clinical History Log & Voice Calls
+                </h4>
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  The interview panel supports both text interrogation and live secure voice call rooms. Patients realistically articulate symptoms, pain behaviors, and history dynamically.
+                </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay="delay-100">
-              <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e1424] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
-                <div className="h-8 w-8 rounded-lg bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center font-mono text-xs text-emerald-400 font-bold">02</div>
-                <h4 className="font-bold text-base text-gray-200">Upgraded Dashboard & Detailed Feedback</h4>
-                <p className="text-xs text-gray-400 leading-relaxed">The command center tracks clinical exposure, patient acuity profiles, and diagnostic performance matrices with comprehensive log inspection panels providing deep post-exam insights.</p>
+              <div className="p-6 rounded-2xl bg-gradient-to-b from-[var(--card)] to-transparent border border-white/5 space-y-3 h-full hover:border-white/10 transition-colors duration-300">
+                <div className="h-8 w-8 rounded-lg bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center font-mono text-xs text-emerald-400 font-bold">
+                  02
+                </div>
+
+                <h4 className="font-bold text-base text-gray-200">
+                  Upgraded Dashboard & Detailed Feedback
+                </h4>
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  The command center tracks clinical exposure, patient acuity profiles, and diagnostic performance matrices with comprehensive log inspection panels providing deep post-exam insights.
+                </p>
               </div>
             </ScrollReveal>
           </div>
