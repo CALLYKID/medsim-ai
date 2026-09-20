@@ -10,7 +10,7 @@ const geistSans = Geist({
 
 export const metadata = {
   verification: {
-    google: "google-site-verification" content="pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
+    google: "pbW7l_nCjL1D0HqGCBQx2sQA8LFbFrwpe-PhHa2mnd0",
   },
 };
 const geistMono = Geist_Mono({
