@@ -391,15 +391,6 @@ export default function Home() {
               <div className="relative mx-auto w-full min-w-0 max-w-[540px]">
                 {/* floating status - kept INSIDE visual bounds */}
 
-                <div className="absolute left-3 top-4 z-20 hidden animate-[float_6s_ease-in-out_infinite] rounded-2xl border border-white/[0.08] bg-[var(--card)]/95 p-3 shadow-2xl backdrop-blur-xl sm:block">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,.7)]" />
-
-                    <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">
-                      Patient connected
-                    </span>
-                  </div>
-                </div>
 
                 <div className="absolute bottom-4 right-3 z-20 hidden animate-[float_7s_ease-in-out_infinite_reverse] rounded-2xl border border-white/[0.08] bg-[var(--card)]/95 p-3 shadow-2xl backdrop-blur-xl sm:block">
                   <div className="text-[8px] font-black uppercase tracking-wider text-gray-600">
