@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description:
     "MedicSim is an AI-powered clinical simulation platform for OSCE practice, clinical assessments, and realistic patient simulation.",
 
+  applicationName: "MedicSim",
+
   keywords: [
     "OSCE practice",
     "OSCE simulator",
@@ -75,14 +77,9 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.ico", type: "image/x-icon" },
-    ],
-    apple: [
-      { url: "/favicon.ico", sizes: "180x180", type: "image/x-icon" },
-    ],
-    shortcut: ["/favicon.ico"],
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 };
 
@@ -96,11 +93,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--text)]">
-  <ThemeProvider />
-  {children}
-  <Analytics />
-</body>
+      <body className="flex min-h-full flex-col bg-[var(--background)] text-[var(--text)]">
+        <ThemeProvider />
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
