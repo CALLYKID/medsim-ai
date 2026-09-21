@@ -402,26 +402,6 @@ return (
 
           <div className="relative mx-auto max-w-[540px]">  
 
-            {/* floating status */}  
-
-            <div className="absolute -left-3 top-10 z-20 hidden animate-[float_6s_ease-in-out_infinite] rounded-2xl border border-white/[0.08] bg-[var(--card)]/80 p-3 shadow-2xl backdrop-blur-xl sm:block lg:-left-8">  
-              <div className="flex items-center gap-2">  
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,.7)]" />  
-                <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">  
-                  Patient connected  
-                </span>  
-              </div>  
-            </div>  
-
-            <div className="absolute -right-2 bottom-16 z-20 hidden animate-[float_7s_ease-in-out_infinite_reverse] rounded-2xl border border-white/[0.08] bg-[var(--card)]/85 p-3 shadow-2xl backdrop-blur-xl sm:block lg:-right-8">  
-              <div className="text-[8px] font-black uppercase tracking-wider text-gray-600">  
-                Case library  
-              </div>  
-              <div className="mt-1 text-xl font-black text-white">  
-                60  
-              </div>  
-            </div>  
-
             {/* main panel */}  
 
             <div className="overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[var(--card)]/75 shadow-[0_30px_100px_rgba(0,0,0,.35)] backdrop-blur-2xl">  
