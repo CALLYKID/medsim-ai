@@ -100,7 +100,7 @@ export default function AccountMenu() {
 
   if (loading) {
     return (
-      <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 animate-pulse" />
+      <div className="h-9 w-9 animate-pulse rounded-full border border-white/10 bg-white/5" />
     );
   }
 
@@ -118,15 +118,16 @@ export default function AccountMenu() {
   return (
     <>
       {/* LOGIN BUTTON */}
+
       {!user && (
         <button
           type="button"
           onClick={() => setShowLoginOverlay(true)}
-          className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-200 shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-white hover:shadow-indigo-500/10 active:translate-y-0 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+          className="group relative inline-flex cursor-pointer items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-200 shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-white active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
         >
           <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
-          <span className="relative h-1.5 w-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_8px_rgba(129,140,248,0.8)] transition-all duration-300 group-hover:scale-125" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_8px_var(--primary)] transition-all duration-300 group-hover:scale-125" />
 
           <span className="relative">Log in</span>
 
@@ -137,12 +138,17 @@ export default function AccountMenu() {
       )}
 
       {/* LOGGED IN */}
+
       {user && (
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            onClick={() => setShowAccountMenu(!showAccountMenu)}
-            className="group flex cursor-pointer items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60"
+            onClick={() => setShowAccountMenu((value) => !value)}
+            className={`group flex cursor-pointer items-center gap-2 rounded-full outline-none transition-all duration-300 ${
+              showAccountMenu
+                ? "ring-2 ring-[var(--primary)]/50 ring-offset-2 ring-offset-[var(--background)]"
+                : "hover:ring-2 hover:ring-[var(--primary)]/30 hover:ring-offset-2 hover:ring-offset-[var(--background)]"
+            }`}
             aria-label="Open account menu"
             aria-expanded={showAccountMenu}
           >
@@ -150,79 +156,169 @@ export default function AccountMenu() {
               <img
                 src={avatarUrl}
                 alt={displayName}
-                className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-lg transition-all duration-300 group-hover:border-[var(--primary)]/60 group-hover:scale-105 group-hover:shadow-indigo-500/20 group-active:scale-95"
+                className={`h-9 w-9 rounded-full border object-cover shadow-lg transition-all duration-300 ${
+                  showAccountMenu
+                    ? "scale-105 border-[var(--primary)]/70 shadow-[0_0_20px_var(--primary)]/20"
+                    : "border-white/20 group-hover:scale-105 group-hover:border-[var(--primary)]/60"
+                } group-active:scale-95`}
               />
             ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-black transition-all duration-300 group-hover:scale-105 group-hover:opacity-90 group-active:scale-95">
+              <div
+                className={`flex h-9 w-9 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-black text-white shadow-lg transition-all duration-300 ${
+                  showAccountMenu
+                    ? "scale-105 shadow-[0_0_20px_var(--primary)]/25"
+                    : "group-hover:scale-105"
+                } group-active:scale-95`}
+              >
                 {displayName.charAt(0).toUpperCase()}
               </div>
             )}
           </button>
 
           {showAccountMenu && (
-            <div className="absolute right-0 top-12 z-[100] w-72 origin-top-right animate-[accountMenuIn_0.18s_ease-out] rounded-2xl border border-white/10 bg-[var(--card)] p-2 shadow-2xl shadow-black/40">
+            <div
+              className="account-menu-scroll absolute right-0 top-[calc(100%+10px)] z-[100] w-[calc(100vw-2rem)] max-w-[380px] overflow-y-auto overscroll-contain rounded-3xl border border-white/[0.09] bg-[var(--card)]/95 p-3 shadow-[0_25px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl animate-[accountMenuIn_0.22s_cubic-bezier(0.16,1,0.3,1)] sm:w-[380px] sm:p-4"
+              style={{
+                maxHeight: "calc(100dvh - 90px)",
+              }}
+            >
+              {/* PROFILE */}
 
-              <div className="mb-1 border-b border-white/5 px-3 py-3">
-                <p className="truncate text-sm font-bold text-white">
-                  {displayName}
-                </p>
+              <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
+                <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[var(--primary)]/[0.08] blur-3xl" />
 
-                {user.email && (
-                  <p className="mt-0.5 truncate text-[11px] text-gray-500">
-                    {user.email}
-                  </p>
-                )}
+                <div className="relative flex min-w-0 items-center gap-3">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={displayName}
+                      className="h-11 w-11 shrink-0 rounded-full border border-white/15 object-cover shadow-lg"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-black text-white shadow-lg">
+                      {displayName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black text-white">
+                      {displayName}
+                    </p>
+
+                    {user.email && (
+                      <p className="mt-0.5 truncate text-[10px] text-gray-500">
+                        {user.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="shrink-0 rounded-full border border-emerald-400/15 bg-emerald-400/[0.05] px-2 py-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_7px_rgba(52,211,153,.6)]" />
+                      <span className="text-[7px] font-black uppercase tracking-wider text-emerald-400">
+                        Active
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <Link
-                href="/dashboard"
-                onClick={() => setShowAccountMenu(false)}
-                className="group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold text-gray-300 transition-all duration-200 hover:bg-white/5 hover:pl-4 hover:text-white active:scale-[0.98]"
-              >
-                <span>Performance Dashboard</span>
+              {/* DASHBOARD */}
 
-                <span className="text-gray-600 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--primary)]">
-                  →
-                </span>
-              </Link>
+              <div className="mt-3">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setShowAccountMenu(false)}
+                  className="group flex min-h-[58px] cursor-pointer items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--primary)]/20 hover:bg-[var(--primary)]/[0.045] active:scale-[0.985]"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--primary)]/15 bg-[var(--primary)]/[0.06] text-sm transition-all duration-300 group-hover:scale-105">
+                    📊
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-black text-gray-200 transition-colors group-hover:text-white">
+                      Performance Dashboard
+                    </p>
+
+                    <p className="mt-0.5 truncate text-[9px] text-gray-600">
+                      Review your clinical performance
+                    </p>
+                  </div>
+
+                  <span className="shrink-0 text-gray-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--primary)]">
+                    →
+                  </span>
+                </Link>
+              </div>
 
               {/* APPEARANCE */}
-              <div className="mt-2 border-t border-white/5 pt-3">
-                <p className="px-3 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                  Appearance
-                </p>
 
-                <ThemeSelector />
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/[0.06] bg-black/[0.08]">
+                <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-3.5">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-300">
+                      Appearance
+                    </p>
+
+                    <p className="mt-1 truncate text-[9px] text-gray-600">
+                      Personalise your clinical workspace
+                    </p>
+                  </div>
+
+                  <div className="ml-3 shrink-0 rounded-lg border border-[var(--primary)]/15 bg-[var(--primary)]/[0.05] px-2 py-1 text-[8px] font-black uppercase tracking-wider text-[var(--primary)]">
+                    Themes
+                  </div>
+                </div>
+
+                <div className="p-3 sm:p-4">
+                  <ThemeSelector />
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={signOut}
-                disabled={signingOut}
-                className="group mt-2 flex w-full cursor-pointer items-center justify-between rounded-xl border-t border-white/5 px-3 py-3 pt-3 text-left text-xs font-bold text-red-400 transition-all duration-200 hover:bg-red-500/5 hover:pl-4 hover:text-red-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <span>{signingOut ? "Logging out..." : "Log out"}</span>
+              {/* LOGOUT */}
 
-                <span className="transition-transform duration-200 group-hover:translate-x-1">
-                  →
-                </span>
-              </button>
+              <div className="mt-3 border-t border-white/[0.06] pt-3">
+                <button
+                  type="button"
+                  onClick={signOut}
+                  disabled={signingOut}
+                  className="group flex min-h-[48px] w-full cursor-pointer items-center gap-3 rounded-2xl px-4 text-left transition-all duration-300 hover:bg-red-500/[0.06] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-red-400/10 bg-red-400/[0.04] text-xs text-red-400 transition-all duration-300 group-hover:scale-105">
+                    ↪
+                  </div>
+
+                  <span className="flex-1 text-xs font-bold text-red-400 transition-colors group-hover:text-red-300">
+                    {signingOut ? "Logging out..." : "Log out"}
+                  </span>
+
+                  {!signingOut && (
+                    <span className="text-red-400/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-red-300">
+                      →
+                    </span>
+                  )}
+
+                  {signingOut && (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-400/20 border-t-red-400" />
+                  )}
+                </button>
+              </div>
             </div>
           )}
         </div>
       )}
 
       {/* LOGIN OVERLAY */}
+
       {showLoginOverlay && !user && (
         <div
-          className="login-overlay fixed inset-0 z-[200] flex cursor-pointer items-center justify-center bg-black/70 p-5"
+          className="login-overlay fixed inset-0 z-[200] flex cursor-pointer items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-md sm:p-6"
           onClick={closeLoginOverlay}
         >
           <div
-            className="login-modal relative w-full max-w-md cursor-default rounded-3xl border border-white/10 bg-[var(--card)]/95 p-7 shadow-2xl shadow-black/50 backdrop-blur-2xl sm:p-9"
+            className="login-modal relative my-auto w-full max-w-md cursor-default overflow-hidden rounded-3xl border border-white/10 bg-[var(--card)]/95 p-6 shadow-2xl shadow-black/50 backdrop-blur-2xl sm:p-9"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* CLOSE */}
             <button
               type="button"
               onClick={closeLoginOverlay}
@@ -234,9 +330,9 @@ export default function AccountMenu() {
             </button>
 
             <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-purple-600 shadow-xl shadow-indigo-500/20 transition-transform duration-500 hover:scale-105 hover:rotate-2">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-purple-600 text-white shadow-xl shadow-indigo-500/20 transition-transform duration-500 hover:scale-105 hover:rotate-2">
                 <svg
-                  className="h-7 w-7 text-white"
+                  className="h-7 w-7"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -260,12 +356,11 @@ export default function AccountMenu() {
               </p>
             </div>
 
-            {/* GOOGLE */}
             <button
               type="button"
               onClick={signInWithGoogle}
               disabled={signingIn}
-              className="group relative mt-7 flex w-full cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl bg-white px-5 py-3.5 text-sm font-bold text-black shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 hover:shadow-xl active:translate-y-0 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+              className="group relative mt-7 flex w-full cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl bg-white px-5 py-3.5 text-sm font-bold text-black shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 hover:shadow-xl active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/[0.04] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
@@ -307,7 +402,6 @@ export default function AccountMenu() {
               )}
             </button>
 
-            {/* CONTINUE WITHOUT ACCOUNT */}
             <button
               type="button"
               onClick={() => setShowLoginOverlay(false)}
@@ -326,28 +420,40 @@ export default function AccountMenu() {
       )}
 
       <style jsx>{`
-        @keyframes overlayIn {
+        @keyframes accountMenuIn {
           from {
             opacity: 0;
-            backdrop-filter: blur(0px);
+            transform: translateY(-8px) scale(0.96);
+            filter: blur(4px);
           }
 
           to {
             opacity: 1;
-            backdrop-filter: blur(12px);
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+
+        @keyframes overlayIn {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
           }
         }
 
         @keyframes modalMorphIn {
           from {
             opacity: 0;
-            transform: translateY(18px) scale(0.92);
-            filter: blur(8px);
+            transform: translateY(18px) scale(0.94);
+            filter: blur(6px);
           }
 
           60% {
             opacity: 1;
-            transform: translateY(-3px) scale(1.015);
+            transform: translateY(-2px) scale(1.01);
             filter: blur(0);
           }
 
@@ -358,25 +464,35 @@ export default function AccountMenu() {
           }
         }
 
-        @keyframes accountMenuIn {
-          from {
-            opacity: 0;
-            transform: translateY(-5px) scale(0.97);
-          }
+        .account-menu-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+        }
 
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        .account-menu-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .account-menu-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .account-menu-scroll::-webkit-scrollbar-thumb {
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.12);
+        }
+
+        .account-menu-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.22);
         }
 
         .login-overlay {
-          animation: overlayIn 0.3s ease-out forwards;
+          animation: overlayIn 0.25s ease-out forwards;
         }
 
         .login-modal {
-          animation: modalMorphIn 0.45s cubic-bezier(0.16, 1, 0.3, 1)
-            forwards;
+          animation: modalMorphIn 0.4s
+            cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
     </>

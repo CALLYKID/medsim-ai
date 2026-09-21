@@ -345,7 +345,7 @@ export default function VoiceCallModal({
     // Establish Call Connection simulation
     const connectTimer = setTimeout(() => {
       setCallState("CONNECTED");
-    }, 1200);
+    }, 2);
 
     const durationTimer = setInterval(() => {
       setCallDuration((prev) => prev + 1);
