@@ -283,7 +283,11 @@ export default function AccountMenu() {
             ref={menuRef}
             className="account-menu-scroll fixed z-[999999] w-[calc(100vw-2rem)] max-w-[380px] overflow-y-auto overscroll-contain rounded-3xl border border-white/[0.09] bg-[var(--card)]/98 p-3 shadow-[0_30px_100px_rgba(0,0,0,0.7)] backdrop-blur-2xl animate-[accountMenuIn_0.22s_cubic-bezier(0.16,1,0.3,1)] sm:w-[380px] sm:p-4"
             style={{
-              top: `${menuPosition.top}px`,
+              top: `${
+  window.innerWidth < 640
+    ? Math.min(menuPosition.top, window.innerHeight - 620)
+    : menuPosition.top
+}px`,
               right: `${menuPosition.right}px`,
               maxHeight: "calc(100dvh - 90px)",
             }}
