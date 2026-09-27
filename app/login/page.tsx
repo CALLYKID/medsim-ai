@@ -46,10 +46,12 @@ export default function LoginPage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10">
         <Link href="/" className="group flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] shadow-lg">
-            <span className="text-lg font-black text-[var(--primary)]">
-              M
-            </span>
-          </div>
+  <img
+    src="/favicon.ico"
+    alt="MedicSim"
+    className="h-7 w-7 object-contain"
+  />
+</div>
 
           <div>
             <div className="font-bold tracking-tight">MedicSim</div>
@@ -75,7 +77,7 @@ export default function LoginPage() {
           <div className="mb-6 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-4 py-2 text-xs font-medium text-[var(--primary)]">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--primary)]" />
-              Secure Clinical Workspace
+              Medicsim Login Page
             </div>
           </div>
 

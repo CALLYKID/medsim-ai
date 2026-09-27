@@ -196,9 +196,13 @@ return (
         href="/"  
         className="group flex cursor-pointer items-center gap-3"  
       >  
-        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-lg transition-all duration-300 group-hover:scale-105 group-hover:border-[var(--primary)]/60 group-hover:shadow-[0_0_25px_var(--primary)]/20">  
-          🩺  
-        </div>  
+        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--primary)]/30 bg-[var(--primary)]/10 transition-all duration-300 group-hover:scale-105 group-hover:border-[var(--primary)]/60 group-hover:shadow-[0_0_25px_var(--primary)]/20">
+  <img
+    src="/favicon.ico"
+    alt="MedicSim"
+    className="h-6 w-6 object-contain"
+  />
+</div>
 
         <div>  
           <div className="text-sm font-black tracking-tight text-white">  
