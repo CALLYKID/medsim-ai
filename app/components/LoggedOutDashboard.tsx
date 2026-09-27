@@ -68,7 +68,7 @@ export default function LoggedOutDashboard() {
           </div>
 
           <Link
-            href="/"
+            href="/login"
             className="group shrink-0 inline-flex items-center justify-center gap-2.5 rounded-xl bg-white px-5 py-3 text-xs font-black text-black shadow-[0_8px_30px_rgba(255,255,255,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-gray-100 hover:shadow-[0_12px_35px_rgba(255,255,255,0.14)] active:scale-95"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
