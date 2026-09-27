@@ -26,5 +26,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.5,
     },
+    {
+      url: "https://medicsim.vercel.app/privacy",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: "https://medicsim.vercel.app/terms",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: "https://medicsim.vercel.app/login",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
   ];
 }
