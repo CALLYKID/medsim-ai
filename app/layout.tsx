@@ -18,16 +18,18 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://medicsim.vercel.app"),
 
   title: {
-    default: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    default: "MedicSim | The Advanced AI OSCE Simulator & Patient Simulation",
     template: "%s | MedicSim",
   },
 
   description:
-    "MedicSim is an AI-powered clinical simulation platform for OSCE practice, clinical assessments, and realistic patient simulation.",
+    "MedicSim is an interactive AI OSCE simulator designed for medical students to practice history-taking, communication, and clinical reasoning with realistic virtual patients.",
 
   applicationName: "MedicSim",
 
   keywords: [
+    "AI OSCE simulator", // Added exact broad search phrase at the top
+    "OSCE simulator AI",
     "OSCE practice",
     "OSCE simulator",
     "clinical simulation",
@@ -61,9 +63,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    title: "MedicSim | Next-Gen AI OSCE Simulator",
     description:
-      "AI-powered clinical simulation for OSCE practice, clinical assessments, and realistic patient simulation.",
+      "Practice clinical history-taking and diagnostic reasoning inside an interactive AI OSCE simulator featuring dynamic virtual patients.",
     url: "https://medicsim.vercel.app",
     siteName: "MedicSim",
     type: "website",
@@ -71,9 +73,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "MedicSim | Clinical OSCE Assessment & Patient Simulation",
+    title: "MedicSim | AI OSCE Simulator & Clinical Simulation",
     description:
-      "AI-powered clinical simulation for OSCE practice, clinical assessments, and realistic patient simulation.",
+      "Interactive AI clinical simulation for medical students to practice OSCE exam scenarios.",
   },
 
   icons: {

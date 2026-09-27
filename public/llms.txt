@@ -1,0 +1,9 @@
+# MedicSim
+
+> MedicSim is an advanced, voice-powered AI OSCE simulator designed for medical students to practice clinical history-taking, physical assessments, and diagnostic reasoning.
+
+## Core Features
+- **AI OSCE Simulator:** Realistic clinical examinations with dynamic virtual AI patients across 60 distinct cases.
+- **Real-Time Voice Consultations:** Immersive verbal dialogue featuring speech recognition, live patient responses, and active waveform visualization.
+- **Physical Examinations & Investigations:** Perform vitals checks, thoracic/abdominal reviews, and request lab reports.
+- **Automated OSCE Evaluation:** Receive immediate structured feedback covering history accuracy, red flags, and learning points.
